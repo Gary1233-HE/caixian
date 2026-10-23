@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>採鮮 LINE 下單</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+[hidden]{display:none!important}body{margin:0}
+/* Layout: 單欄手機優先 — 頂部店家資料、分類品項清單、底部固定送出列 */
+:root{
+  --bg:#f3f6f1; --card:#ffffff; --fg:#1d2a1f; --muted:#66756a; --line:#dbe3d7;
+  --accent:#2f6b3a; --accent-soft:#e3efe2; --line-green:#06c755; --warn:#b5541c; --warn-soft:#fbeee4;
+  --f-display:"Huninn","Noto Sans TC",system-ui,sans-serif;
+  --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121813; --card:#1b231c; --fg:#e6ede4; --muted:#9aab9d; --line:#2c372d;
+  --accent:#8fcf97; --accent-soft:#223524; --line-green:#18d667; --warn:#f0a070; --warn-soft:#3a2617; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121813; --card:#1b231c; --fg:#e6ede4; --muted:#9aab9d; --line:#2c372d;
+  --accent:#8fcf97; --accent-soft:#223524; --line-green:#18d667; --warn:#f0a070; --warn-soft:#3a2617; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 120px;display:flex;flex-direction:column;gap:16px}
+header h1{font-family:var(--f-display);font-size:28px;margin:0;color:var(--accent);font-weight:400}
+header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.notice{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.notice b{font-weight:700}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.box h2{margin:0;font-size:15px;font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr}}
+label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted);min-width:0}
+input,select,textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+textarea{resize:vertical;min-height:64px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.search{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:6px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tab{flex:none;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--card)}
+.list{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cat{font-size:12px;letter-spacing:.08em;color:var(--muted);padding:10px 14px 4px;background:var(--bg);border-top:1px solid var(--line)}
+.cat:first-child{border-top:0}
+.row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid var(--line)}
+.cat + .row{border-top:0}
+.row.on{background:var(--accent-soft)}
+.name{min-width:0;font-weight:500}
+.row select{width:auto;padding:6px 4px;font-size:14px}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.step button{width:34px;height:34px;border:0;background:transparent;color:var(--accent);font-size:20px;cursor:pointer}
+.step input{width:46px;border:0;border-radius:0;text-align:center;padding:6px 0;background:transparent;font-variant-numeric:tabular-nums}
+.add{display:grid;grid-template-columns:1fr 70px 70px auto;gap:6px}
+@media (max-width:420px){.add{grid-template-columns:1fr 1fr 1fr}.add input:first-child{grid-column:1/-1}}
+.btn{border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer}
+.btn.ghost{background:var(--accent-soft);color:var(--accent)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:20}
+.bar .in{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.bar .count{flex:1;font-size:14px;color:var(--muted)}
+.bar .count b{color:var(--fg);font-size:18px;font-variant-numeric:tabular-nums}
+.btn.line{background:var(--line-green);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet .panel{background:var(--card);width:100%;max-width:640px;max-height:88%;overflow:auto;border-radius:16px 16px 0 0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.panel h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:22px}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin:0;font-family:var(--f-body);font-size:14.5px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.acts .full{grid-column:1/-1}
+a.btn{text-align:center;text-decoration:none}
+.tip{font-size:12.5px;color:var(--muted);margin:0}
+.err{color:var(--warn);font-size:13px;margin:0}
+footer{font-size:12.5px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>採鮮 LINE 下單</h1>
+    <p>採鮮農產行・沙鹿區平等路・0931-981233</p>
+  </header>
+
+  <div class="notice" id="cutoff"></div>
+
+  <section class="box">
+    <h2>訂購資料</h2>
+    <div class="grid2">
+      <label>店名 / 客戶名稱 *<input id="shop" autocomplete="organization" placeholder="例：沙鹿小吃店"></label>
+      <label>聯絡電話<input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="09xx-xxx-xxx"></label>
+      <label>送貨日期 *<input id="date" type="date"></label>
+      <label>送貨區域
+        <select id="area"><option value="">請選擇</option><option>沙鹿區</option><option>梧棲區</option><option>清水區</option><option>西屯區</option><option>太平區</option></select>
+      </label>
+    </div>
+    <label>備註<textarea id="note" placeholder="例：高麗菜要小顆、蔥要細的"></textarea></label>
+  </section>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="搜尋品項…">
+  </div>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="list" id="list"></div>
+
+  <section class="box">
+    <h2>清單沒有的品項</h2>
+    <div class="add">
+      <input id="cName" placeholder="品名（米、油、肉也可以）">
+      <input id="cQty" type="number" inputmode="decimal" min="0" step="0.5" placeholder="數量">
+      <input id="cUnit" placeholder="單位" value="斤">
+      <button class="btn ghost" id="cAdd" type="button">加入</button>
+    </div>
+  </section>
+
+  <footer>LINE 官方帳號 @nvy5669n・配送：沙鹿、梧棲、清水、西屯、太平</footer>
+</div>
+
+<div class="bar"><div class="in">
+  <div class="count">已選 <b id="cnt">0</b> 項</div>
+  <button class="btn line" id="review" type="button" disabled>確認訂單</button>
+</div></div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h2 id="sheetTitle">確認訂單</h2>
+    <pre id="preview"></pre>
+    <p class="err" id="err" hidden></p>
+    <div class="acts">
+      <a class="btn line full" id="send" href="#" target="_blank" rel="noopener">開啟 LINE 傳送訂單</a>
+      <button class="btn ghost" id="copy" type="button">複製訂單文字</button>
+      <button class="btn ghost" id="close" type="button">返回修改</button>
+    </div>
+    <p class="tip">按下後會開啟採鮮官方 LINE，訂單已自動帶入，再按「傳送」就完成。若沒有自動帶入，請按「複製訂單文字」貼上傳送。</p>
+  </div>
+</div>
+
+<script>
+const LINE_ID='@nvy5669n';
+const UNITS=['斤','公斤','箱','把','顆','包','籃'];
+const CATS={
+  '葉菜類':['高麗菜','大白菜','小白菜','青江菜','空心菜','地瓜葉','A菜','大陸妹','菠菜','芥藍菜','油菜','莧菜','美生菜','綠花椰','白花椰'],
+  '根莖類':['洋蔥','馬鈴薯','紅蘿蔔','白蘿蔔','地瓜','芋頭','牛蒡','蓮藕','山藥','竹筍','玉米','玉米筍'],
+  '瓜果類':['小黃瓜','大黃瓜','絲瓜','苦瓜','冬瓜','南瓜','櫛瓜','茄子','番茄','牛番茄','青椒','紅甜椒','黃甜椒','四季豆','敏豆','豌豆莢','秋葵','蘆筍'],
+  '菇類':['杏鮑菇','金針菇','香菇','鴻喜菇','雪白菇','秀珍菇','木耳'],
+  '辛香料':['青蔥','蒜頭','老薑','嫩薑','辣椒','九層塔','香菜','芹菜','韭菜','蒜苗'],
+  '豆芽／其他':['綠豆芽','黃豆芽','豆苗','檸檬','百香果']
+};
+const DEF_UNIT={'青蔥':'斤','香菜':'斤','九層塔':'斤','玉米':'根'};
+// state: key -> {name,cat,qty,unit}
+const items=[];Object.entries(CATS).forEach(([c,arr])=>arr.forEach(n=>items.push({key:c+'|'+n,name:n,cat:c,qty:0,unit:DEF_UNIT[n]||'斤'})));
+const custom=[];let curCat='全部';
+const $=id=>document.getElementById(id);
+
+function store(k,v){try{v===undefined?null:localStorage.setItem(k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
+
+function pad(n){return String(n).padStart(2,'0')}
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function initDate(){const t=new Date();t.setDate(t.getDate()+1);$('date').value=ymd(t);$('date').min=ymd(t);
+  $('cutoff').innerHTML='<b>下單截止：送貨前一天晚上 12 點</b>。今天下單最快明天（'+(t.getMonth()+1)+'/'+t.getDate()+'）送達；週日及公休日另行公告。';}
+
+function renderTabs(){const t=['全部','已選',...Object.keys(CATS)];
+  $('tabs').innerHTML=t.map(c=>`<button class="tab" type="button" aria-pressed="${c===curCat}" data-c="${c}">${c}</button>`).join('');}
+function renderList(){const q=$('q').value.trim();let html='',last='';
+  items.forEach((it,i)=>{
+    if(q&&!it.name.includes(q))return;
+    if(curCat==='已選'&&!it.qty)return;
+    if(curCat!=='全部'&&curCat!=='已選'&&it.cat!==curCat)return;
+    if(it.cat!==last){html+=`<div class="cat">${it.cat}</div>`;last=it.cat}
+    html+=`<div class="row${it.qty?' on':''}" data-i="${i}">
+      <div class="name">${it.name}</div>
+      <select aria-label="${it.name}單位" data-u="${i}">${[...new Set([it.unit,...UNITS])].map(u=>`<option${u===it.unit?' selected':''}>${u}</option>`).join('')}</select>
+      <div class="step"><button type="button" data-d="-1" aria-label="減少">−</button><input aria-label="${it.name}數量" inputmode="decimal" data-q="${i}" value="${it.qty||''}" placeholder="0"><button type="button" data-d="1" aria-label="增加">+</button></div>
+    </div>`;});
+  custom.forEach((c,j)=>{if(q&&!c.name.includes(q))return;if(curCat!=='全部'&&curCat!=='已選')return;
+    if(last!=='自填'){html+='<div class="cat">自填品項</div>';last='自填'}
+    html+=`<div class="row on"><div class="name">${c.name}</div><span>${c.qty} ${c.unit}</span><button class="btn ghost" type="button" data-rm="${j}" style="padding:6px 10px">刪除</button></div>`;});
+  $('list').innerHTML=html||'<div class="cat" style="padding:16px 14px">找不到品項，可在下方「清單沒有的品項」自行加入。</div>';
+  updateCount();}
+function updateCount(){const n=items.filter(i=>i.qty>0).length+custom.length;$('cnt').textContent=n;$('review').disabled=!n;}
+
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;curCat=b.dataset.c;renderTabs();renderList();});
+$('q').addEventListener('input',renderList);
+$('list').addEventListener('click',e=>{
+  const rm=e.target.closest('[data-rm]');if(rm){custom.splice(+rm.dataset.rm,1);renderList();return}
+  const b=e.target.closest('[data-d]');if(!b)return;const i=+b.closest('.row').dataset.i;const it=items[i];
+  it.qty=Math.max(0,Math.round((it.qty+(+b.dataset.d))*10)/10);
+  const row=b.closest('.row');row.querySelector('[data-q]').value=it.qty||'';row.classList.toggle('on',it.qty>0);updateCount();});
+$('list').addEventListener('input',e=>{const i=e.target.dataset.q;if(i===undefined)return;const v=parseFloat(e.target.value);
+  items[i].qty=isNaN(v)||v<0?0:v;e.target.closest('.row').classList.toggle('on',items[i].qty>0);updateCount();});
+$('list').addEventListener('change',e=>{const i=e.target.dataset.u;if(i!==undefined)items[i].unit=e.target.value;});
+$('cAdd').addEventListener('click',()=>{const n=$('cName').value.trim(),q=parseFloat($('cQty').value),u=$('cUnit').value.trim()||'斤';
+  if(!n||!(q>0)){$('cName').focus();return}custom.push({name:n,qty:q,unit:u});$('cName').value='';$('cQty').value='';renderList();});
+
+['shop','phone','area'].forEach(k=>{const v=load('cx_'+k);if(v)$(k).value=v;$(k).addEventListener('change',()=>store('cx_'+k,$(k).value));});
+
+function wk(s){const d=new Date(s+'T00:00');return isNaN(d)?'':'（'+'日一二三四五六'[d.getDay()]+'）'}
+function buildText(){const sel=items.filter(i=>i.qty>0);const lines=[];
+  lines.push('【採鮮訂單】');
+  lines.push('店名：'+$('shop').value.trim());
+  if($('phone').value.trim())lines.push('電話：'+$('phone').value.trim());
+  lines.push('送貨日：'+$('date').value.replace(/-/g,'/')+wk($('date').value));
+  if($('area').value)lines.push('區域：'+$('area').value);
+  lines.push('—————');
+  sel.forEach(i=>lines.push(i.name+'　'+i.qty+' '+i.unit));
+  custom.forEach(c=>lines.push(c.name+'　'+c.qty+' '+c.unit));
+  lines.push('—————');
+  lines.push('共 '+(sel.length+custom.length)+' 項');
+  if($('note').value.trim())lines.push('備註：'+$('note').value.trim());
+  return lines.join('\n');}
+
+$('review').addEventListener('click',()=>{
+  const err=[];if(!$('shop').value.trim())err.push('請填寫店名');if(!$('date').value)err.push('請選擇送貨日期');
+  const t=buildText();$('preview').textContent=t;
+  $('err').hidden=!err.length;$('err').textContent=err.join('、');
+  $('send').href='https://line.me/R/oaMessage/'+encodeURIComponent(LINE_ID)+'/?'+encodeURIComponent(t);
+  $('send').style.pointerEvents=err.length?'none':'';$('send').style.opacity=err.length?'.45':'';
+  $('sheet').hidden=false;});
+$('close').addEventListener('click',()=>$('sheet').hidden=true);
+$('sheet').addEventListener('click',e=>{if(e.target.id==='sheet')$('sheet').hidden=true});
+$('copy').addEventListener('click',async()=>{const t=$('preview').textContent;
+  try{await navigator.clipboard.writeText(t);$('copy').textContent='已複製 ✓'}catch(e){const r=document.createRange();r.selectNodeContents($('preview'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('copy').textContent='已選取，請長按複製'}
+  setTimeout(()=>$('copy').textContent='複製訂單文字',2500);});
+
+initDate();renderTabs();renderList();
+</script>
+</body>
+</html>
