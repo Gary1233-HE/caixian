@@ -259,7 +259,7 @@ nav.tabbar button[aria-current="page"]{color:var(--accent)}
   <main class="gut" style="padding-top:0"><div class="in" style="display:flex;flex-direction:column;gap:16px">
     <div class="shortcuts">
       <button class="sc" type="button" data-sheet="stores"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 10h16l-1.5-5h-13z"/><path d="M5 10v10h14V10M10 20v-5h4v5"/></svg></span>店家設定</button>
-      <button class="sc" type="button" data-go="slips"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 2.5h14v19l-2.3-1.5-2.4 1.5-2.3-1.5-2.3 1.5-2.4-1.5L5 21.5z"/><path d="M8.5 7.5h7M8.5 11h7M8.5 14.5h4"/></svg></span>出貨明細</button>
+      <button class="sc" type="button" data-sheet="member" style="position:relative"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 5h14v10H10l-5 4z"/><path d="M9 10l2 2 4-4"/></svg></span>會員進度<i class="badge" id="mBadge" style="left:calc(50% + 14px)"></i></button>
       <button class="sc" type="button" data-go="price"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 19l5-6 4 3 7-9"/><path d="M15 7h5v5"/></svg></span>價格分析</button>
       <button class="sc" type="button" data-go="stats"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 20V11M10 20V5M15 20v-7M20 20V8"/></svg></span>交易統計</button>
     </div>
@@ -356,6 +356,15 @@ function norm(sp,q){const msg=[];if(!(q>0))return{v:0,msg};let v=isKg(sp)?Math.r
   if(sp.min&&v<sp.min){v=sp.min;msg.push(`最少訂 ${sp.min} ${sp.u}`)}
   if(v<=0){v=isKg(sp)?0.1:1}
   return{v,msg}}
+/* 會員進度：綁定店家申請 */
+let apps=[
+ {n:'水煎包',a:'沙鹿區中山路 100 號',d:'2026-09-15',st:'ok'},
+ {n:'鐵板燒',a:'梧棲區文化路 50 號',d:'2026-10-02',st:'ok'},
+ {n:'清水麵店',a:'清水區中山路 1 號',d:'',st:'wait'},
+ {n:'早餐店',a:'沙鹿區光華路',d:'2026-10-20',st:'no',why:'地址不在配送區域，請用 LINE 聯絡採鮮'}
+];
+const APPST={wait:['審核中','background:var(--orange-soft);color:var(--orange)'],ok:['已核准','background:var(--accent-soft);color:var(--accent)'],no:['未通過','']};
+function updMBadge(){const el=document.getElementById('mBadge');if(el)el.textContent=apps.filter(a=>a.st==='wait').length||''}
 const REASONS=['重複訂購','接收時間無法配合','商品規格不符','數量填錯','其他'];
 const ANN='11/16（日）公休，11/15 請提早下單　｜　颱風過後葉菜價格波動大，以實際出貨為準';
 
@@ -404,6 +413,7 @@ const slips=[
 let notes=[
  {t:'出貨修改',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產」修改出貨明細，立即點擊查看詳細內容。',time:full(TODAY())+' 05:51',un:true,go:'orders',seg:'ship'},
  {t:'訂單出貨中',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產」確認，正在進行出貨準備。',time:full(TODAY())+' 02:55',un:true,go:'orders',seg:'ship'},
+ {t:'會員審核未通過',b:'「早餐店」綁定申請未通過：地址不在配送區域，請用 LINE 聯絡採鮮。',time:'2026/10/21 09:30',un:false,sheet:'member'},
  {t:'公休公告',b:'11/16（日）公休，11/15 請提早下單。',time:full(addD(TODAY(),-1))+' 18:00',un:true},
  {t:'訂單已出貨',b:'訂單 SO20261027013，交貨日 '+full(addD(TODAY(),-5))+'，已從「採鮮農產」出貨囉～',time:full(addD(TODAY(),-5))+' 04:05',un:false,go:'orders',seg:'done'},
  {t:'訂單已取消',b:'訂單 SO20261023005 已取消（重複訂購）。',time:full(addD(TODAY(),-10))+' 21:12',un:false,go:'orders',seg:'can'}
@@ -606,7 +616,7 @@ function renderNotes(){const L=notes.map((n,i)=>[n,i]).filter(([n])=>!nFilter||n
   $('nlist').innerHTML=(nFilter?`<div class="gut" style="padding-block:8px"><div class="in warnbar" style="display:flex;justify-content:space-between;align-items:center">搜尋：${esc(nFilter)}<button class="btn sm plain" type="button" id="nClr">清除</button></div></div>`:'')+
    L.map(([n,i])=>`<button class="nt gut${n.un?' unread':''}" type="button" data-n="${i}"><span class="tx"><b>${n.t}</b><span>${esc(n.b)}</span><time>${n.time}</time></span><i class="dot"></i></button>`).join('');updBadge()}
 function updBadge(){$('nBadge').textContent=notes.filter(n=>n.un).length||''}
-$('nlist').addEventListener('click',e=>{if(e.target.closest('#nClr')){nFilter='';renderNotes();return}const b=e.target.closest('[data-n]');if(!b)return;const n=notes[+b.dataset.n];n.un=false;updBadge();if(n.go){if(n.seg)seg=n.seg;go(n.go)}else renderNotes()});
+$('nlist').addEventListener('click',e=>{if(e.target.closest('#nClr')){nFilter='';renderNotes();return}const b=e.target.closest('[data-n]');if(!b)return;const n=notes[+b.dataset.n];n.un=false;updBadge();if(n.sheet){renderNotes();info(n.sheet)}else if(n.go){if(n.seg)seg=n.seg;go(n.go)}else renderNotes()});
 
 /* ---------- 出貨明細／分析 ---------- */
 $('sFrom').value=TODAY().slice(0,8)+'01';$('sTo').value=TODAY();
@@ -634,6 +644,7 @@ function openStores(){sheet('切換店家',`<div class="radio">${STORES.map(s=>`
   ()=>{$('shB').onchange=e=>{if(e.target.name==='st'){store=e.target.value;closeSheet();header();renderProducts();if(view==='orders')renderOrders();if(view==='slips')renderSlips();toast('已切換到 '+STORES.find(s=>s.id===store).n)}};
     $('applyStore').onclick=()=>info('apply')})}
 const INFO={
+ member:null,
  setting:['個人設定',`<label>姓名<input value="王小姐"></label><label>手機<input type="tel" value="0912-***-***"></label><p class="hint">以 LINE 帳號登入，不需密碼。</p><button class="btn pri" type="button" data-close>確認</button>`],
  stores:null,
  invite:['邀請好友',`<div style="align-self:center;width:180px;height:180px;background:repeating-conic-gradient(var(--fg) 0 25%,var(--card) 0 50%) 0 0/24px 24px;border:10px solid var(--card);outline:1px solid var(--line)"></div><p style="text-align:center;margin:0">掃描加入採鮮 LINE 官方帳號<br><b>@nvy5669n</b></p><p class="hint">正式版顯示真的 QR Code；新朋友加入後需由採鮮核准才能下單。</p><button class="btn plain" type="button" data-close>關閉</button>`],
@@ -642,8 +653,14 @@ const INFO={
  notice:['購物須知',`<table class="tbl"><tr><td>下單截止</td><td>交貨日當天凌晨 01:00<br><small class="hint">01:00～04:00 下單會詢問是否順延</small></td></tr><tr><td>配送區域</td><td>沙鹿、梧棲、清水、西屯、太平</td></tr><tr><td>配送時間</td><td>依各路線安排</td></tr><tr><td>公告</td><td>${ANN}</td></tr></table>`],
  contact:['聯絡採鮮',`<p>LINE 官方帳號 @nvy5669n<br>台中市沙鹿區平等路</p>`],
  terms:['使用條款及隱私權政策',`<p class="hint">正式版放條款內容。</p>`],
- apply:['申請綁定新店家',`<label>店名<input placeholder="例：清水麵店"></label><label>送貨地址<input placeholder="例：清水區中山路 1 號"></label><label>聯絡電話<input type="tel" placeholder="09xx-xxx-xxx"></label><p class="hint">送出後由採鮮核准，核准後即可切換到該店下單。</p><button class="btn pri" type="button" data-close>送出申請（樣品）</button>`]};
-function info(k){if(k==='stores')return openStores();const[t,h]=INFO[k];sheet(t,h+(h.includes('data-close')?'':'<button class="btn plain" type="button" data-close>關閉</button>'))}
+ apply:['申請綁定新店家',`<label>店名<input placeholder="例：清水麵店"></label><label>送貨地址<input placeholder="例：清水區中山路 1 號"></label><label>聯絡電話<input type="tel" placeholder="09xx-xxx-xxx"></label><p class="hint">送出後由採鮮審核，可在「個人 → 會員進度」查看結果。</p><button class="btn pri" type="button" id="appGo">送出申請</button>`]};
+function memberSheet(){sheet('會員進度',`<p class="hint" style="margin:0">店家綁定申請由採鮮審核，核准後才能用該店下單。</p>
+  ${apps.map(a=>`<div class="oc" style="border:1px solid var(--line);border-radius:8px"><div class="f"><b style="font-size:17px">${esc(a.n)}</b><span class="pill" style="${APPST[a.st][1]}">${APPST[a.st][0]}</span></div>
+  <div class="hint">${esc(a.a)}・申請日 ${full(a.d)}</div>${a.why?`<div class="warnbar bad">未通過原因：${esc(a.why)}</div>`:''}${a.st==='wait'?'<div class="hint">審核結果會在「通知」告訴你</div>':''}${a.st==='no'?'<button class="btn soft sm" type="button" data-sheet="apply" style="align-self:flex-start">修改後重新申請</button>':''}</div>`).join('')}
+  <button class="btn or" type="button" data-sheet="apply">＋ 申請綁定新店家</button><button class="btn plain" type="button" data-close>關閉</button>`)}
+function info(k){if(k==='stores')return openStores();if(k==='member')return memberSheet();const[t,h]=INFO[k];sheet(t,h+(h.includes('data-close')||h.includes('appGo')?'':'<button class="btn plain" type="button" data-close>關閉</button>'));
+  if(k==='apply')$('appGo').onclick=()=>{const n=$('shB').querySelector('input').value.trim();if(!n){$('shB').querySelector('input').focus();return}
+    apps.unshift({n,a:$('shB').querySelectorAll('input')[1].value.trim()||'（未填）',d:TODAY(),st:'wait'});updMBadge();memberSheet();toast('已送出申請，等待採鮮審核')}}
 $('openNotice').addEventListener('click',()=>info('notice'));
 document.addEventListener('click',e=>{const s=e.target.closest('[data-sheet]');if(s){info(s.dataset.sheet);return}const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 
@@ -653,7 +670,7 @@ function go(v){if(!(v in TITLES))v='shop';view=v;Object.keys(TITLES).forEach(k=>
   header();if(v==='orders')renderOrders();if(v==='notes')renderNotes();if(v==='slips')renderSlips();if(v==='price')renderPrice();if(v==='stats')renderStats();renderCartBar();window.scrollTo(0,0)}
 document.querySelector('nav.tabbar').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)});
 
-renderCats();setDate(earliest());updBadge();go((location.hash||'').slice(1));
+apps[2].d=addD(TODAY(),-1);renderCats();setDate(earliest());updBadge();updMBadge();go((location.hash||'').slice(1));
 </script>
 </body>
 </html>
