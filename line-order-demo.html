@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>採鮮下單頁樣品</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+[hidden]{display:none!important}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Layout: 照農易訂客戶端 — 頂部綠色標題列（左選單、中店名、右搜尋購物車）、內容、底部 商品／訂單／通知／個人 */
+:root{
+  --bg:#f3f5f2; --card:#ffffff; --fg:#1c291e; --muted:#6a786d; --line:#dfe6db;
+  --head:#5fbf7f; --head-fg:#ffffff; --head-btn:#eef8f0; --head-btn-fg:#1c291e;
+  --accent:#2f8a4a; --accent-soft:#e3f2e6; --on-accent:#ffffff;
+  --fav-off:#c9cfca; --orange:#e8731f; --orange-soft:#fdf0e5; --on-orange:#ffffff; --heart:#e57373;
+  --bad:#c23b32; --bad-soft:#fbe6e4; --info:#2c5e89; --info-soft:#e3edf7; --unread:#fff7f0;
+  --f-display:"Huninn","Noto Sans TC",system-ui,sans-serif;
+  --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111613; --card:#1a211c; --fg:#e4ebe3; --muted:#9aa99d; --line:#2b352d;
+  --head:#2e6b42; --head-fg:#ffffff; --head-btn:#3d7d51; --head-btn-fg:#ffffff;
+  --accent:#86d29b; --accent-soft:#1f3326; --on-accent:#0f2014;
+  --fav-off:#3d4740; --orange:#f2954f; --orange-soft:#3a2615; --on-orange:#1e1105; --heart:#f08a8a;
+  --bad:#f08a80; --bad-soft:#3a1c19; --info:#90bbe5; --info-soft:#19293a; --unread:#262019; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --card:#1a211c; --fg:#e4ebe3; --muted:#9aa99d; --line:#2b352d;
+  --head:#2e6b42; --head-fg:#ffffff; --head-btn:#3d7d51; --head-btn-fg:#ffffff;
+  --accent:#86d29b; --accent-soft:#1f3326; --on-accent:#0f2014;
+  --fav-off:#3d4740; --orange:#f2954f; --orange-soft:#3a2615; --on-orange:#1e1105; --heart:#f08a8a;
+  --bad:#f08a80; --bad-soft:#3a1c19; --info:#90bbe5; --info-soft:#19293a; --unread:#262019; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--head)}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input,select,textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.in{max-width:640px;margin:0 auto}
+
+.demo{background:var(--info-soft);color:var(--info);font-size:12.5px;padding-block:6px}
+.demo .in{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.demo select{width:auto;font-size:12.5px;padding:2px 6px;background:var(--card)}
+.demo label{display:flex;gap:4px;align-items:center}
+.demo input[type=checkbox]{width:auto}
+
+/* 頂部 */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;background:var(--head);color:var(--head-fg)}
+.top .bar{display:grid;grid-template-columns:96px 1fr 96px;align-items:center;padding-block:10px;min-height:64px}
+.top h1{margin:0;text-align:center;font-weight:700;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top h1 button{border:0;background:transparent;font-weight:700;font-size:20px;text-decoration:underline;text-underline-offset:4px;color:var(--head-fg)}
+.hb{width:44px;height:44px;border-radius:50%;border:0;background:var(--head-btn);color:var(--head-btn-fg);display:inline-flex;align-items:center;justify-content:center;position:relative}
+.hpill{display:inline-flex;background:var(--head-btn);border-radius:999px;justify-self:end}
+.hpill .hb{background:transparent}
+.right{justify-self:end}
+.cnt{position:absolute;top:2px;right:2px;background:var(--orange);color:var(--on-orange);font-size:11px;border-radius:999px;padding:0 5px;line-height:16px;font-weight:700}
+.cnt:empty{display:none}
+.searchrow{padding-block:0 10px}
+.searchrow input{background:var(--card)}
+
+/* 商品頁 */
+.cats{display:flex;align-items:center;background:var(--card);border-bottom:1px solid var(--line)}
+.cats .scroll{display:flex;gap:4px;overflow-x:auto;flex:1}
+.ct{flex:none;border:0;background:transparent;color:var(--muted);padding:10px 10px;font-size:16px;border-bottom:3px solid transparent}
+.ct[aria-pressed="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.ctfav{flex:none;border:0;border-left:1px solid var(--line);background:transparent;color:var(--heart);padding:6px 14px;font-size:22px}
+.ctfav[aria-pressed="true"]{background:var(--orange-soft)}
+.subs{display:flex;gap:6px;overflow-x:auto;padding-block:8px 0}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 12px;font-size:13.5px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+main{padding-block:12px 170px;display:flex;flex-direction:column;gap:10px}
+.inforow{display:grid;grid-template-columns:1fr auto;gap:10px}
+.notice-btn,.date-btn{border:0;border-radius:8px;background:var(--head);color:var(--head-fg);display:flex;align-items:center;gap:8px;padding:10px 12px;min-width:0}
+.notice-btn .mq{flex:1;overflow:hidden;white-space:nowrap;font-weight:700;font-size:14px;text-align:left}
+.notice-btn .mq span{display:inline-block;animation:mq 24s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.notice-btn .mq span{animation:none;padding-left:0}}
+.date-btn{font-size:17px;text-decoration:underline;text-underline-offset:3px;font-variant-numeric:tabular-nums}
+.warnbar{border-radius:8px;padding:8px 12px;font-size:13.5px;background:var(--orange-soft);color:var(--orange)}
+.warnbar.bad{background:var(--bad-soft);color:var(--bad)}
+.pc{display:grid;grid-template-columns:88px 1fr;gap:12px;background:var(--card);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:10px 12px 10px 10px;align-items:center}
+.pc.on{outline:2px solid var(--accent)}
+.thumb{width:88px;height:72px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:30px;color:#fff}
+.pc .info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pc .nm{font-size:19px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc .row{display:flex;align-items:center;gap:8px}
+.pc .pr{flex:1;font-size:19px;font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pc .pr small{font-size:13px;font-weight:400;color:var(--muted)}
+.pc .meta{font-size:12.5px;color:var(--muted)}
+.tag{font-size:11.5px;border-radius:999px;padding:0 7px;background:var(--orange-soft);color:var(--orange);margin-left:4px}
+.ib{width:50px;height:34px;border:0;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;position:relative}
+.ib.fav{background:var(--fav-off);color:#fff}
+.ib.fav[aria-pressed="true"]{background:var(--heart)}
+.ib.cart{background:var(--orange);color:var(--on-orange)}
+.ib .q{position:absolute;top:-7px;right:-7px;background:var(--accent);color:var(--on-accent);font-size:11px;border-radius:999px;padding:0 5px;line-height:17px;font-weight:700}
+.empty{text-align:center;color:var(--muted);padding:28px 16px;background:var(--card);border:1px dashed var(--line);border-radius:8px}
+.linkbtn{border:0;background:transparent;color:var(--accent);font-weight:700;text-decoration:underline;padding:8px}
+
+.btn{border:0;border-radius:8px;padding:11px 14px;font-weight:700;text-align:center}
+.btn.pri{background:var(--accent);color:var(--on-accent)}
+.btn.or{background:var(--orange);color:var(--on-orange)}
+.btn.soft{background:var(--accent-soft);color:var(--accent)}
+.btn.grey{background:#5f5f5f;color:#fff}
+.btn.plain{background:var(--card);border:1px solid var(--line)}
+.btn.outline{background:transparent;border:1.5px solid var(--orange);color:var(--orange);padding:5px 14px;font-size:15px}
+.btn.bad{background:var(--bad);color:#fff}
+.btn.sm{padding:5px 12px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.cartbar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:15;padding-block:8px;pointer-events:none}
+.cartbar .in{display:flex;align-items:center;gap:10px;background:var(--accent);color:var(--on-accent);border-radius:12px;padding:8px 8px 8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.2);pointer-events:auto}
+.cartbar .sum{flex:1;font-size:14px;font-variant-numeric:tabular-nums}
+.cartbar .sum b{font-size:18px}
+.cartbar .btn{background:var(--orange);color:var(--on-orange)}
+
+nav.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabbar .in{display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabbar button{border:0;background:transparent;color:var(--muted);font-size:12.5px;padding:8px 0 9px;display:flex;flex-direction:column;align-items:center;gap:1px;position:relative}
+nav.tabbar button[aria-current="page"]{color:var(--accent)}
+.badge{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bad);color:#fff;font-style:normal;font-size:11.5px;border-radius:999px;padding:0 6px;line-height:19px;font-weight:700}
+.badge:empty{display:none}
+
+/* 訂單 */
+.seg{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card)}
+.seg button{border:0;background:transparent;padding:12px 0;border-bottom:3px solid transparent;font-size:16px;text-decoration:underline;text-underline-offset:4px;color:var(--fg)}
+.seg button[aria-pressed="true"]{color:var(--orange);border-bottom-color:var(--orange)}
+.flat{padding-block:0 170px;gap:10px;display:flex;flex-direction:column}
+.oc{background:var(--card);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.oc .h{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.oc .sup{font-size:19px;font-weight:700}
+.oc .items{font-size:17px}
+.oc .store{font-size:16px;color:var(--muted)}
+.oc .f{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.oc .d{color:var(--head);font-size:16px;font-variant-numeric:tabular-nums}
+.oc .amt{color:var(--orange);font-size:17px;font-variant-numeric:tabular-nums}
+.oc .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px}
+.pill{font-size:12px;border-radius:999px;padding:1px 8px;font-weight:700;background:var(--bad-soft);color:var(--bad)}
+
+/* 通知 */
+.nt{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:0;border-bottom:1px solid var(--line);padding:14px 16px;text-align:left;width:100%}
+.nt.unread{background:var(--unread)}
+.nt .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.nt b{font-size:18px}
+.nt span{font-size:15.5px;color:var(--muted)}
+.nt time{font-size:13.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nt .dot{width:11px;height:11px;border-radius:50%;background:var(--orange);flex:none;margin-top:8px}
+.nt:not(.unread) .dot{visibility:hidden}
+
+/* 個人 */
+.phead{background:var(--head);color:var(--head-fg);border-radius:0 0 40px 40px;padding-block:10px 64px}
+.phead .in{display:flex;align-items:center;gap:12px}
+.phead .av{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex:none}
+.phead b{font-size:24px;flex:1}
+.phead .set{border:0;background:rgba(0,0,0,.18);color:#fff;border-radius:999px;padding:6px 16px;font-size:17px}
+.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:-52px;position:relative}
+.sc{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px}
+.sc .ic{width:62px;height:62px;border-radius:50%;background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.menu{background:var(--card);border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
+.menu .mi{display:flex;align-items:center;gap:12px;width:100%;border:0;border-top:1px solid var(--line);background:transparent;padding:15px 16px;text-align:left;font-size:18px}
+.menu .mi:first-child{border-top:0}
+.menu .mi span{flex:1}
+.menu .mi svg{color:var(--muted)}
+.ver{text-align:center;color:var(--muted);font-size:14px}
+
+/* 彈出 */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.panel{background:var(--card);width:100%;max-width:640px;max-height:92%;overflow:auto;border-radius:16px 16px 0 0;padding-top:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.panel h2{margin:0;font-size:20px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.specs{display:flex;gap:8px;flex-wrap:wrap}
+.sp{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:6px 14px;font-size:15px}
+.sp[aria-pressed="true"]{border-color:var(--orange);color:var(--orange);font-weight:700;background:var(--orange-soft)}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card);width:max-content}
+.step button{width:44px;height:44px;border:0;background:transparent;color:var(--accent);font-size:22px}
+.step input{width:70px;border:0;border-radius:0;text-align:center;padding:6px 0;background:transparent;font-variant-numeric:tabular-nums;font-size:18px}
+.step.sm button{width:32px;height:32px;font-size:18px}
+.step.sm input{width:48px;font-size:15px}
+.big-pr{font-size:24px;font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+.cl{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-top:1px solid var(--line)}
+.cl:first-child{border-top:0}
+.cl .nm{font-weight:700}
+.cl .sub{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.total{display:flex;justify-content:space-between;align-items:baseline;background:var(--orange-soft);border-radius:8px;padding:12px 14px}
+.total b{font-size:20px;font-variant-numeric:tabular-nums;color:var(--orange)}
+.datebar{display:flex;gap:10px;align-items:center}
+.datebar b{flex:none;font-weight:500;color:var(--muted);font-size:13.5px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-weight:500;color:var(--muted);font-size:12.5px;text-align:left;padding:4px 0}
+.tbl td{padding:6px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tbl .r{text-align:right}
+.tblwrap{overflow-x:auto}
+.field{display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.field>span{font-size:17px}
+.field .two{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
+.radio{display:flex;flex-direction:column}
+.radio label{display:flex;gap:10px;align-items:center;padding:8px 2px;font-size:17px}
+.radio input{width:20px;height:20px;accent-color:var(--orange)}
+.ok{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:10px 0}
+.ok .big{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:34px}
+.ok b{font-size:19px;font-variant-numeric:tabular-nums}
+.catlist button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:12px 4px;font-size:17px}
+.catlist button.sub{padding-left:24px;font-size:15px;color:var(--muted)}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;background:var(--accent-soft);border-radius:6px;font-size:13px;color:var(--muted)}
+.stat b{display:block;color:var(--fg);font-size:16px;font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;z-index:40;max-width:90%}
+</style>
+</head>
+<body>
+
+<div class="demo gut"><div class="in">
+  <b>樣品資料</b>
+  <label>模擬時間 <select id="simTime"><option value="now">現在</option><option value="00:30">00:30 截單前</option><option value="02:00">02:00 灰色時段</option><option value="05:00">05:00 已換日</option></select></label>
+  <label><input type="checkbox" id="showPay" checked> 出貨明細顯示收款狀態（後台設定）</label>
+</div></div>
+
+<header class="top"><div class="gut"><div class="in">
+  <div class="bar">
+    <div id="hLeft"></div>
+    <h1 id="hTitle"></h1>
+    <div id="hRight" class="right"></div>
+  </div>
+  <div class="searchrow" id="searchRow" hidden><input type="search" id="q" placeholder="搜尋商品…"></div>
+</div></div></header>
+
+<!-- 商品 -->
+<section id="v-shop">
+  <div class="cats gut"><div class="in" style="display:flex;width:100%"><div class="scroll" id="cats"></div><button class="ctfav" type="button" id="favTab" aria-pressed="false" aria-label="常用商品">♥</button></div></div>
+  <main class="gut"><div class="in" style="display:flex;flex-direction:column;gap:10px">
+    <div class="subs" id="subs" hidden></div>
+    <div class="inforow">
+      <button class="notice-btn" type="button" id="openNotice"><svg class="i" viewBox="0 0 24 24"><path d="M3 10v4h3l7 5V5L6 10z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg><span class="mq"><span id="mqText"></span></span>›</button>
+      <button class="date-btn" type="button" id="openDate"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="dateLbl"></span></button>
+    </div>
+    <div id="dateWarn"></div>
+    <div class="hint" id="ptime"></div>
+    <div id="plist" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div style="text-align:center"><button class="linkbtn" type="button" id="openCustom">找不到商品？加入客訂</button></div>
+  </div></main>
+</section>
+
+<!-- 訂單 -->
+<section id="v-orders" hidden>
+  <div class="seg" id="seg"><button type="button" data-s="sub">已提交</button><button type="button" data-s="ship">出貨中</button><button type="button" data-s="done">已出貨</button><button type="button" data-s="can">已取消</button></div>
+  <div class="flat" id="olist" style="padding-top:10px"></div>
+</section>
+
+<!-- 通知 -->
+<section id="v-notes" hidden><div id="nlist" style="padding-bottom:120px"></div></section>
+
+<!-- 個人 -->
+<section id="v-me" hidden>
+  <div class="phead gut"><div class="in"><div class="av"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg></div><b id="meName">王小姐</b><button class="set" type="button" data-sheet="setting">設定 ✎</button></div></div>
+  <main class="gut" style="padding-top:0"><div class="in" style="display:flex;flex-direction:column;gap:16px">
+    <div class="shortcuts">
+      <button class="sc" type="button" data-sheet="stores"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 10h16l-1.5-5h-13z"/><path d="M5 10v10h14V10M10 20v-5h4v5"/></svg></span>店家設定</button>
+      <button class="sc" type="button" data-go="slips"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 2.5h14v19l-2.3-1.5-2.4 1.5-2.3-1.5-2.3 1.5-2.4-1.5L5 21.5z"/><path d="M8.5 7.5h7M8.5 11h7M8.5 14.5h4"/></svg></span>出貨明細</button>
+      <button class="sc" type="button" data-go="price"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 19l5-6 4 3 7-9"/><path d="M15 7h5v5"/></svg></span>價格分析</button>
+      <button class="sc" type="button" data-go="stats"><span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 20V11M10 20V5M15 20v-7M20 20V8"/></svg></span>交易統計</button>
+    </div>
+    <div class="menu">
+      <button class="mi" type="button" data-go="slips"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M12 16V10M9 12.5l3-3 3 3"/></svg><span>匯出出貨明細</span>›</button>
+      <button class="mi" type="button" data-sheet="stores"><svg class="i" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5-9 5z"/><path d="M3 8v8l9 5 9-5V8"/></svg><span>收件人（店家）管理</span>›</button>
+      <button class="mi" type="button" data-sheet="invite"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5M15 15c2.5 0 4.5 1.2 5.5 4"/></svg><span>邀請好友</span>›</button>
+      <button class="mi" type="button" data-sheet="faq"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg><span>常見問題</span>›</button>
+      <button class="mi" type="button" data-sheet="guide"><svg class="i" viewBox="0 0 24 24"><circle cx="7" cy="14" r="3"/><circle cx="17" cy="14" r="3"/><path d="M10 14h4M4 14l2-6M20 14l-2-6"/></svg><span>操作教學</span>›</button>
+      <button class="mi" type="button" data-sheet="notice"><svg class="i" viewBox="0 0 24 24"><path d="M3 10v4h3l7 5V5L6 10z"/></svg><span>購物須知／配送須知</span>›</button>
+      <button class="mi" type="button" data-sheet="contact"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg><span>聯絡採鮮</span>›</button>
+      <button class="mi" type="button" data-sheet="terms"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12l2 2 4-4"/></svg><span>使用條款及隱私權政策</span>›</button>
+    </div>
+    <div class="ver">版本 v0.1（樣品）・以 LINE 帳號登入</div>
+  </div></main>
+</section>
+
+<!-- 出貨明細（匯出出貨明細） -->
+<section id="v-slips" hidden><main class="gut"><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="field"><span>交貨日期</span><div class="two"><input type="date" id="sFrom" aria-label="起"><span>～</span><input type="date" id="sTo" aria-label="迄"></div></div>
+  <div class="total"><span id="sCount"></span><b id="sSum"></b></div>
+  <div id="slist" style="display:flex;flex-direction:column;gap:10px"></div>
+</div></main></section>
+
+<!-- 價格分析 -->
+<section id="v-price" hidden><main class="gut"><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="hint">查詢區間：過去 7 天（依出貨明細計算）</div>
+  <div id="plist2" style="display:flex;flex-direction:column;gap:10px"></div>
+</div></main></section>
+
+<!-- 交易統計 -->
+<section id="v-stats" hidden><main class="gut"><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="hint">查詢區間：本月（依出貨明細計算）</div>
+  <div id="stlist" style="display:flex;flex-direction:column;gap:10px"></div>
+</div></main></section>
+
+<div class="cartbar gut" id="cartbar" hidden><div class="in">
+  <div class="sum">已選 <b id="cbN">0</b> 項・預估 <b id="cbAmt">$0</b><br><small id="cbMk"></small></div>
+  <button class="btn" type="button" id="openCart2">去結帳</button>
+</div></div>
+
+<nav class="tabbar"><div class="in">
+  <button type="button" data-v="shop"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1"/></svg>商品</button>
+  <button type="button" data-v="orders"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h3"/></svg>訂單</button>
+  <button type="button" data-v="notes"><svg class="i" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>通知<i class="badge" id="nBadge"></i></button>
+  <button type="button" data-v="me"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg>個人</button>
+</div></nav>
+
+<!-- 共用彈出 -->
+<div class="sheet" id="sh" hidden><div class="panel" role="dialog" aria-modal="true" aria-labelledby="shT"><h2 id="shT"></h2><div id="shB" style="display:flex;flex-direction:column;gap:12px"></div></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- 樣品資料 ---------- */
+const CATS={'蔬菜蕈菇類':['葉菜','根莖','瓜果','菇類'],'辛香料':[],'豆製品':[],'截切':[]};
+const COLORS=['#7cb342','#e67c3b','#c0ca33','#8d6e63','#43a047','#ef6c00','#6d8b3a','#a1887f'];
+const P=[
+ {id:1,n:'高麗菜原封',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',28],['顆',55]]},
+ {id:2,n:'大白菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',22]]},
+ {id:3,n:'美生菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',45]],mk:true},
+ {id:4,n:'小白菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',35],['把',20]]},
+ {id:5,n:'雪里紅',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',40]]},
+ {id:6,n:'紅蘿蔔',c:'蔬菜蕈菇類',s:'根莖',sp:[['斤',25]],mk:true},
+ {id:7,n:'馬鈴薯(本產)',c:'蔬菜蕈菇類',s:'根莖',sp:[['斤',30]],mk:true},
+ {id:8,n:'洋蔥/進口',c:'蔬菜蕈菇類',s:'根莖',sp:[['斤',22],['袋(20公斤)',620]]},
+ {id:9,n:'白蘿蔔',c:'蔬菜蕈菇類',s:'根莖',sp:[['條',30],['斤',18]]},
+ {id:10,n:'小黃瓜',c:'蔬菜蕈菇類',s:'瓜果',sp:[['斤',42]]},
+ {id:11,n:'牛番茄',c:'蔬菜蕈菇類',s:'瓜果',sp:[['斤',48],['箱(10公斤)',780]],lead:2},
+ {id:12,n:'冷凍秋葵',c:'蔬菜蕈菇類',s:'瓜果',sp:[['包',65]]},
+ {id:13,n:'杏鮑菇',c:'蔬菜蕈菇類',s:'菇類',sp:[['包',38],['箱(3公斤)',420]]},
+ {id:14,n:'金針菇',c:'蔬菜蕈菇類',s:'菇類',sp:[['包',15]]},
+ {id:15,n:'青蔥',c:'辛香料',sp:[['斤',75]],mk:true},
+ {id:16,n:'蒜角(粗)',c:'辛香料',sp:[['斤',90]]},
+ {id:17,n:'老薑',c:'辛香料',sp:[['斤',60]]},
+ {id:18,n:'九層塔',c:'辛香料',sp:[['斤',120]]},
+ {id:19,n:'大漢板豆腐',c:'豆製品',sp:[['盒',25]]},
+ {id:20,n:'大漢三角油豆腐',c:'豆製品',sp:[['包',35]]},
+ {id:21,n:'綠豆芽',c:'豆製品',sp:[['斤',20]]},
+ {id:22,n:'薑絲',c:'截切',sp:[['斤',110]]},
+ {id:23,n:'高麗菜絲',c:'截切',sp:[['斤',45]]}
+];
+const STORES=[{id:'A',n:'水煎包',a:'沙鹿區中山路 100 號'},{id:'B',n:'鐵板燒',a:'梧棲區文化路 50 號'}];
+const REASONS=['重複訂購','接收時間無法配合','商品規格不符','數量填錯','其他'];
+const ANN='11/16（日）公休，11/15 請提早下單　｜　颱風過後葉菜價格波動大，以實際出貨為準';
+
+/* ---------- 工具 ---------- */
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const addD=(s,n)=>{const d=new Date(s+'T00:00');d.setDate(d.getDate()+n);return ymd(d)};
+const wk=s=>'（'+'日一二三四五六'[new Date(s+'T00:00').getDay()]+'）';
+const md=s=>pad(+s.slice(5,7))+'/'+pad(+s.slice(8));
+const full=s=>s.replace(/-/g,'/');
+const money=n=>'$ '+Math.round(n).toLocaleString();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(t){$('toast').textContent=t;$('toast').hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').hidden=true,2400)}
+function now(){const d=new Date();const v=$('simTime').value;if(v!=='now'){const[h,m]=v.split(':');d.setHours(+h,+m,0,0)}return d}
+const TODAY=()=>ymd(now());
+const REST=(()=>{const d=new Date();d.setDate(d.getDate()+((7-d.getDay())%7||7)+7);return ymd(d)})();
+const hm=()=>{const d=now();return d.getHours()*60+d.getMinutes()};
+const earliest=()=>hm()<240?TODAY():addD(TODAY(),1);
+const inGrey=d=>d===TODAY()&&hm()>=60&&hm()<240;
+const SVG={menu:'<svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1" fill="currentColor"/><rect x="13" y="4" width="7" height="7" rx="1" fill="currentColor"/><rect x="4" y="13" width="7" height="7" rx="1" fill="currentColor"/><rect x="13" y="13" width="7" height="7" rx="1" fill="currentColor"/></svg>',
+ search:'<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>',
+ cart:'<svg class="i" viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.5a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg>',
+ filter:'<svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="var(--head-btn)"/><circle cx="15" cy="12" r="2" fill="var(--head-btn)"/><circle cx="9" cy="17" r="2" fill="var(--head-btn)"/></svg>',
+ more:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>',
+ back:'<svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+ heart:'<svg class="i" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'};
+
+/* ---------- 狀態 ---------- */
+let store='A',fav=new Set([6,8,19,15]),cat='全部',sub='',favOnly=false,cart={},custom=[],editing=null,seg='sub',date='',view='shop',grey=null,leadOk=false;
+const lineNotes={};
+let orders=[
+ {no:'SO20261102003',store:'A',date:addD(TODAY(),1),created:TODAY(),st:'sub',note:'早上 7 點前送到',src:'LINE 下單',lines:[{pid:1,si:0,q:10},{pid:15,si:0,q:2},{pid:19,si:0,q:6}]},
+ {no:'SO20261101024',store:'A',date:TODAY(),created:addD(TODAY(),-1),st:'ship',note:'',src:'LINE 下單',lines:[{pid:1,si:0,q:120}]},
+ {no:'SO20261027013',store:'A',date:addD(TODAY(),-5),created:addD(TODAY(),-6),st:'done',note:'',src:'LINE 下單',lines:[{pid:6,si:0,q:20},{pid:1,si:0,q:120}],amt:4000},
+ {no:'SO20261025019',store:'A',date:addD(TODAY(),-7),created:addD(TODAY(),-8),st:'done',note:'',src:'採鮮代訂',lines:[{pid:1,si:0,q:180}],amt:5460},
+ {no:'SO20261023005',store:'A',date:addD(TODAY(),-9),created:addD(TODAY(),-10),st:'can',reason:'重複訂購',src:'LINE 下單',lines:[{pid:6,si:0,q:5}]},
+ {no:'SO20260831005',store:'A',date:'2026-09-01',created:'2026-08-31',st:'can',reason:'數量填錯',src:'LINE 下單',lines:[{pid:1,si:0,q:30},{pid:16,si:0,q:2},{pid:22,si:0,q:1},{pid:21,si:0,q:5},{pid:5,si:0,q:3}]}
+];
+const slips=[
+ {no:'SD20261102001',store:'A',date:addD(TODAY(),-1),paid:false,lines:[['高麗菜原封','125.4','斤',30]]},
+ {no:'SD20261027001',store:'A',date:addD(TODAY(),-5),paid:false,lines:[['紅蘿蔔','20.6','斤',26],['高麗菜原封','118.2','斤',29]]},
+ {no:'SD20261025001',store:'A',date:addD(TODAY(),-7),paid:true,lines:[['高麗菜原封','182','斤',30]]},
+ {no:'SD20261022001',store:'B',date:addD(TODAY(),-10),paid:true,lines:[['青蔥','3.2','斤',78],['洋蔥/進口','30','斤',22],['大漢板豆腐','10','盒',25]]}
+];
+let notes=[
+ {t:'出貨修改',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產」修改出貨明細，立即點擊查看詳細內容。',time:full(TODAY())+' 05:51',un:true,go:'orders',seg:'ship'},
+ {t:'訂單出貨中',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產」確認，正在進行出貨準備。',time:full(TODAY())+' 02:55',un:true,go:'orders',seg:'ship'},
+ {t:'公休公告',b:'11/16（日）公休，11/15 請提早下單。',time:full(addD(TODAY(),-1))+' 18:00',un:true},
+ {t:'訂單已出貨',b:'訂單 SO20261027013，交貨日 '+full(addD(TODAY(),-5))+'，已從「採鮮農產」出貨囉～',time:full(addD(TODAY(),-5))+' 04:05',un:false,go:'orders',seg:'done'},
+ {t:'訂單已取消',b:'訂單 SO20261023005 已取消（重複訂購）。',time:full(addD(TODAY(),-10))+' 21:12',un:false,go:'orders',seg:'can'}
+];
+
+/* ---------- 頂部列（依頁面切換） ---------- */
+const TITLES={shop:null,orders:'我的訂單',notes:'通知',me:'個人',slips:'匯出出貨明細',price:'價格分析',stats:'交易統計'};
+const PARENT={slips:'me',price:'me',stats:'me'};
+function header(){const n=Object.values(cart).length+custom.length;
+  let L='',R='';
+  if(view==='shop'){L=`<button class="hb" type="button" id="hCat" aria-label="分類">${SVG.menu}</button>`;
+    R=`<span class="hpill"><button class="hb" type="button" id="hSearch" aria-label="搜尋">${SVG.search}</button><button class="hb" type="button" id="hCart" aria-label="購物車">${SVG.cart}<i class="cnt">${n||''}</i></button></span>`;
+    $('hTitle').innerHTML=`<button type="button" id="hStore">採鮮農產・${STORES.find(s=>s.id===store).n} ▾</button>`}
+  else{$('hTitle').textContent=TITLES[view];
+    if(PARENT[view])L=`<button class="hb" type="button" id="hBack" aria-label="返回">${SVG.back}</button>`;
+    if(view==='orders')R=`<button class="hb" type="button" id="hFilter" aria-label="進階搜尋">${SVG.filter}</button>`;
+    if(view==='notes')R=`<span class="hpill"><button class="hb" type="button" id="hNSearch" aria-label="搜尋通知">${SVG.search}</button><button class="hb" type="button" id="hMore" aria-label="更多">${SVG.more}</button></span>`}
+  $('hLeft').innerHTML=L;$('hRight').innerHTML=R;$('searchRow').hidden=!(view==='shop'&&$('searchRow').dataset.open==='1')}
+$('hLeft').addEventListener('click',e=>{if(e.target.closest('#hCat'))openCats();if(e.target.closest('#hBack'))go(PARENT[view])});
+$('hTitle').addEventListener('click',e=>{if(e.target.closest('#hStore'))openStores()});
+$('hRight').addEventListener('click',e=>{
+  if(e.target.closest('#hSearch')){const r=$('searchRow');r.dataset.open=r.dataset.open==='1'?'':'1';header();if(r.dataset.open)$('q').focus();else{$('q').value='';renderProducts()}}
+  if(e.target.closest('#hCart'))openCart();
+  if(e.target.closest('#hFilter'))openAdv();
+  if(e.target.closest('#hMore'))sheet('通知',`<button class="btn soft" type="button" id="readAll">全部標為已讀</button><button class="btn plain" type="button" data-close>關閉</button>`,()=>{$('readAll').onclick=()=>{notes.forEach(n=>n.un=false);closeSheet();renderNotes()}});
+  if(e.target.closest('#hNSearch'))sheet('搜尋通知',`<input type="search" id="nq" placeholder="輸入單號或關鍵字"><button class="btn pri" type="button" id="nGo">查詢</button>`,()=>{$('nGo').onclick=()=>{nFilter=$('nq').value.trim();closeSheet();renderNotes()}})});
+
+/* ---------- 共用彈出 ---------- */
+function sheet(t,html,after){$('shT').textContent=t;$('shB').innerHTML=html;$('sh').hidden=false;after&&after()}
+function closeSheet(){$('sh').hidden=true}
+$('sh').addEventListener('click',e=>{if(e.target.id==='sh'||e.target.closest('[data-close]'))closeSheet()});
+
+/* ---------- 交貨日 ---------- */
+function setDate(v){date=v;$('dateLbl').textContent=md(v);
+  let h='';if(v===REST)h=`<div class="warnbar bad">${md(v)}${wk(v)} 採鮮公休，請改選其他日期。</div>`;
+  else if(inGrey(v))h=`<div class="warnbar">已過凌晨 01:00 截單，${md(v)} 交貨需採鮮確認，送出時可選擇順延。</div>`;
+  $('dateWarn').innerHTML=h;$('dateWarn').hidden=!h;renderProducts()}
+function dateSheet(after){sheet('選擇交貨日',`<input type="date" id="dIn" min="${earliest()}" value="${date}"><p class="hint">截單：交貨日當天凌晨 01:00。01:00～04:00 下單會詢問是否順延；04:00 後最早隔天交貨。</p><div class="row2"><button class="btn plain" type="button" data-close>取消</button><button class="btn pri" type="button" id="dOk">確定</button></div>`,
+  ()=>{$('dOk').onclick=()=>{if($('dIn').value<earliest()){toast('最早可選 '+md(earliest()));return}setDate($('dIn').value);closeSheet();toast('交貨日 '+md(date)+wk(date)+'，價格已重新計算');after&&after()}})}
+$('openDate').addEventListener('click',()=>dateSheet());
+$('simTime').addEventListener('change',()=>{setDate(earliest());toast('模擬時間已切換')});
+
+/* ---------- 商品 ---------- */
+$('mqText').textContent=ANN+'　｜　'+ANN+'　｜　';
+function renderCats(){$('cats').innerHTML=['全部',...Object.keys(CATS)].map(c=>`<button class="ct" type="button" data-c="${c}" aria-pressed="${!favOnly&&c===cat}">${c}</button>`).join('');
+  $('favTab').setAttribute('aria-pressed',favOnly);
+  const subs=!favOnly&&CATS[cat]||[];$('subs').hidden=!subs.length;
+  $('subs').innerHTML=subs.length?['',...subs].map(s=>`<button class="chip" type="button" data-s="${s}" aria-pressed="${s===sub}">${s||'全部'}</button>`).join(''):''}
+$('cats').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;cat=b.dataset.c;sub='';favOnly=false;renderCats();renderProducts()});
+$('favTab').addEventListener('click',()=>{favOnly=!favOnly;renderCats();renderProducts()});
+$('subs').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;sub=b.dataset.s;renderCats();renderProducts()});
+$('q').addEventListener('input',renderProducts);
+function openCats(){sheet('商品分類',`<div class="catlist">${['全部',...Object.keys(CATS)].map(c=>`<button type="button" data-cc="${c}" data-ss="">${c}</button>${(CATS[c]||[]).map(s=>`<button type="button" class="sub" data-cc="${c}" data-ss="${s}">${s}</button>`).join('')}`).join('')}<button type="button" data-fav>♥ 常用商品</button></div>`,
+  ()=>{$('shB').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-fav'))favOnly=true;else{cat=b.dataset.cc;sub=b.dataset.ss;favOnly=false}closeSheet();renderCats();renderProducts();$('shB').onclick=null}})}
+const qtyOf=pid=>Object.entries(cart).filter(([k])=>k.split('_')[0]==pid).reduce((a,[,v])=>a+v,0);
+function renderProducts(){const q=$('q').value.trim();
+  const v=P.filter(p=>q?p.n.includes(q):favOnly?fav.has(p.id):(cat==='全部'||p.c===cat)&&(!sub||p.s===sub));
+  $('ptime').textContent=`${v.length} 項商品・價格更新 ${md(TODAY())} 14:30・${md(date)} 交貨價`;
+  $('plist').innerHTML=v.length?v.map(p=>{const q=qtyOf(p.id);const[u,pr]=p.sp[0];return `<div class="pc${q?' on':''}" data-p="${p.id}">
+    <div class="thumb" style="background:${COLORS[p.id%COLORS.length]}">${p.n[0]}</div>
+    <div class="info"><div class="nm">${p.n}${p.lead?`<i class="tag">需提前 ${p.lead} 天</i>`:''}</div>
+      <div class="row"><span class="pr">${p.mk?'時價':money(pr)+'<small> /'+u+'</small>'}</span>
+        <button class="ib fav" type="button" data-fav aria-pressed="${fav.has(p.id)}" aria-label="常用">${SVG.heart}</button>
+        <button class="ib cart" type="button" data-add aria-label="加入購物車">${SVG.cart}${q?`<i class="q">${q}</i>`:''}</button></div>
+      ${p.sp.length>1?`<div class="meta">規格：${p.sp.map(s=>s[0]).join('／')}</div>`:''}</div></div>`}).join('')
+    :`<div class="empty">${favOnly?'還沒有常用商品，點商品的 ♥ 加入':'找不到商品，可用下方「加入客訂」'}</div>`;
+  renderCartBar()}
+$('plist').addEventListener('click',e=>{const c=e.target.closest('.pc');if(!c)return;const pid=+c.dataset.p;
+  if(e.target.closest('[data-fav]')){fav.has(pid)?fav.delete(pid):fav.add(pid);toast(fav.has(pid)?'已加入常用':'已移出常用');renderProducts();return}
+  openProduct(pid)});
+function openProduct(pid,si0){const p=P.find(x=>x.id===pid);let si=si0??(p.sp.findIndex((_,i)=>cart[pid+'_'+i])>=0?p.sp.findIndex((_,i)=>cart[pid+'_'+i]):0);
+  const draw=()=>{const[u,pr]=p.sp[si];const k=pid+'_'+si;
+    $('shB').innerHTML=`<div class="big-pr">${p.mk?'時價':money(pr)+' / '+u}</div>
+    ${p.lead?`<div class="warnbar">此商品需提前 ${p.lead} 天訂購</div>`:''}
+    <div><div class="hint" style="margin-bottom:6px">規格</div><div class="specs">${p.sp.map((s,i)=>`<button class="sp" type="button" data-si="${i}" aria-pressed="${i===si}">${s[0]}${cart[pid+'_'+i]?'・'+cart[pid+'_'+i]:''}</button>`).join('')}</div></div>
+    <div style="display:flex;align-items:center;gap:12px"><div class="step"><button type="button" data-d="-1" aria-label="減少">−</button><input id="pq" inputmode="decimal" value="${cart[k]||1}" aria-label="數量"><button type="button" data-d="1" aria-label="增加">+</button></div><span>${u}</span></div>
+    <input id="pnote" placeholder="單品備註（例：要小顆）" value="${esc(lineNotes[k]||'')}">
+    <div class="row2">${cart[k]?`<button class="btn plain" type="button" id="pDel">移出購物車</button>`:`<button class="btn plain" type="button" data-close>取消</button>`}<button class="btn or" type="button" id="pAdd">${cart[k]?'更新數量':'加入購物車'}</button></div>`};
+  sheet(p.n,'',()=>{draw();$('shB').onclick=e=>{
+    const s=e.target.closest('[data-si]');if(s){si=+s.dataset.si;draw();return}
+    const d=e.target.closest('[data-d]');if(d){$('pq').value=Math.max(0,Math.round(((parseFloat($('pq').value)||0)+(+d.dataset.d))*100)/100);return}
+    const k=pid+'_'+si;
+    if(e.target.closest('#pAdd')){const q=parseFloat($('pq').value)||0;if(q>0)cart[k]=q;else delete cart[k];lineNotes[k]=$('pnote').value;closeSheet();renderProducts();header();toast(q>0?`${p.n} ${q} ${p.sp[si][0]} 已加入`:'已移出');$('shB').onclick=null}
+    if(e.target.closest('#pDel')){delete cart[k];closeSheet();renderProducts();header();$('shB').onclick=null}}})}
+
+/* 客訂 */
+$('openCustom').addEventListener('click',()=>sheet('加入客訂',`<p class="hint">清單沒有的商品（米、油、肉、指定規格），採鮮確認貨源後出貨，價格以出貨明細為準。</p>
+  <label>品名<input id="cuN" value="${esc($('q').value.trim())}" placeholder="例：台梗九號米 30 公斤"></label>
+  <div class="row2"><label>數量<input id="cuQ" type="number" inputmode="decimal" min="0" step="0.5" value="1"></label><label>單位<select id="cuU"><option>包</option><option>斤</option><option>公斤</option><option>箱</option><option>桶</option><option>瓶</option><option>顆</option><option>把</option></select></label></div>
+  <div class="row2"><button class="btn plain" type="button" data-close>取消</button><button class="btn or" type="button" id="cuAdd">加入購物車</button></div>`,
+  ()=>{$('cuAdd').onclick=()=>{const n=$('cuN').value.trim(),q=parseFloat($('cuQ').value);if(!n||!(q>0)){$('cuN').focus();return}custom.push({n,q,u:$('cuU').value});closeSheet();renderCartBar();header();toast('已加入客訂：'+n)}}));
+
+/* ---------- 購物車 ---------- */
+function lines(){const L=[];Object.entries(cart).forEach(([k,q])=>{const[pid,si]=k.split('_').map(Number);const p=P.find(x=>x.id===pid);L.push({k,p,si,q,u:p.sp[si][0],pr:p.mk?null:p.sp[si][1]})});custom.forEach((c,i)=>L.push({k:'c'+i,custom:c.n,u:c.u,q:c.q,pr:null}));return L}
+function est(){const L=lines();return{n:L.length,amt:L.reduce((a,l)=>a+(l.pr?l.pr*l.q:0),0),mk:L.filter(l=>l.pr===null).length}}
+function renderCartBar(){const e=est();$('cartbar').hidden=!e.n||view!=='shop';$('cbN').textContent=e.n;$('cbAmt').textContent=money(e.amt);$('cbMk').textContent=e.mk?`另有 ${e.mk} 項時價／客訂，以出貨為準`:''}
+$('openCart2').addEventListener('click',()=>openCart());
+function openCart(){const draw=()=>{const L=lines(),e=est();
+  $('shB').innerHTML=`${editing?`<div class="warnbar">正在修改訂單 ${editing}，送出後更新原訂單</div>`:''}
+  <div class="datebar"><b>交貨日</b><button class="btn plain" type="button" id="cDate" style="flex:1">${full(date)}${wk(date)}</button></div>${$('dateWarn').innerHTML}
+  <div>${L.length?L.map(l=>`<div class="cl" data-k="${l.k}"><div><div class="nm">${esc(l.custom?l.custom+'（客訂）':l.p.n)}</div><div class="sub">${l.pr===null?(l.custom?'價格以出貨明細為準':'時價'):money(l.pr)+' / '+l.u+'　小計 '+money(l.pr*l.q)}${lineNotes[l.k]?'<br>備註：'+esc(lineNotes[l.k]):''}</div></div>
+    <div style="display:flex;gap:6px;align-items:center"><div class="step sm"><button type="button" data-d="-1" aria-label="減少">−</button><input inputmode="decimal" data-q value="${l.q}" aria-label="數量"><button type="button" data-d="1" aria-label="增加">+</button></div><span class="hint">${esc(l.u)}</span></div></div>`).join(''):'<div class="empty">購物車是空的</div>'}</div>
+  <label class="hint">訂單備註（會印在分裝明細表）<textarea id="cNote" rows="2" placeholder="例：早上 7 點前送到後門">${esc(cartNote)}</textarea></label>
+  <div class="total"><span>預估金額${e.mk?`<br><small class="hint">另有 ${e.mk} 項時價／客訂未計入</small>`:''}</span><b>${money(e.amt)}</b></div>
+  <div class="row2"><button class="btn plain" type="button" data-close>繼續選購</button><button class="btn or" type="button" id="submit" ${L.length?'':'disabled'}>${editing?'更新訂單':'送出訂單'}</button></div>`};
+  sheet('購物車','',()=>{draw();
+    $('shB').onclick=e=>{const row=e.target.closest('.cl');const d=e.target.closest('[data-d]');
+      if(row&&d){chg(row.dataset.k,+d.dataset.d,true);draw();return}
+      if(e.target.closest('#cDate')){cartNote=$('cNote').value;dateSheet(openCart);return}
+      if(e.target.closest('#submit')){cartNote=$('cNote').value;$('shB').onclick=null;check()}};
+    $('shB').onchange=e=>{const row=e.target.closest('.cl');if(row&&e.target.matches('[data-q]')){chg(row.dataset.k,parseFloat(e.target.value)||0,false);draw()}}})}
+let cartNote='';
+function chg(k,v,rel){if(k[0]==='c'){const i=+k.slice(1);custom[i].q=Math.max(0,rel?custom[i].q+v:v);if(!custom[i].q)custom.splice(i,1)}
+  else{const q=Math.max(0,Math.round((rel?(cart[k]||0)+v:v)*100)/100);if(q)cart[k]=q;else delete cart[k]}renderProducts();header()}
+function ask(t,body,btns){sheet(t,`<p style="margin:0">${body}</p><div class="row2">${btns.map((b,i)=>`<button class="btn ${b[2]||'plain'}" type="button" data-i="${i}">${b[0]}</button>`).join('')}</div>`,
+  ()=>{$('shB').onclick=e=>{const b=e.target.closest('[data-i]');if(!b)return;$('shB').onclick=null;btns[+b.dataset.i][1]()}})}
+function check(){const v=date;
+  if(v===REST)return ask('公休日',`${md(v)}${wk(v)} 採鮮公休，要改到 ${md(addD(v,1))}${wk(addD(v,1))} 嗎？`,[['返回修改',openCart],['改到隔天',()=>{setDate(addD(v,1));check()},'or']]);
+  if(inGrey(v)&&!grey)return ask('已過截單時間',`現在已過凌晨 01:00 截單。<br>要順延到 ${md(addD(v,1))}${wk(addD(v,1))} 交貨嗎？`,[['仍要今天（由採鮮確認）',()=>{grey='keep';check()}],['順延到明天',()=>{grey='next';setDate(addD(v,1));check()},'or']]);
+  const days=(new Date(v)-new Date(TODAY()))/864e5;const s=lines().filter(l=>l.p&&l.p.lead&&days<l.p.lead);
+  if(s.length&&!leadOk)return ask('需提前訂購',`${s.map(l=>l.p.n+'（需提前 '+l.p.lead+' 天）').join('、')} 來不及在 ${md(v)} 交貨。`,[['返回修改',openCart],['仍送出，由採鮮確認',()=>{leadOk=true;check()},'or']]);
+  place()}
+function place(){const L=lines().map(l=>l.custom?{custom:l.custom,unit:l.u,q:l.q}:{pid:l.p.id,si:l.si,q:l.q,note:lineNotes[l.k]});let no;
+  if(editing){const o=orders.find(x=>x.no===editing);Object.assign(o,{date,lines:L,note:cartNote,store});no=o.no}
+  else{no='SO'+TODAY().replace(/-/g,'')+pad(orders.filter(o=>o.created===TODAY()).length+4).padStart(3,'0');orders.unshift({no,store,date,created:TODAY(),st:'sub',note:cartNote,src:'LINE 下單',lines:L,grey})}
+  notes.unshift({t:editing?'訂單已修改':'訂單已提交',b:`訂單 ${no}，交貨日 ${full(date)}，已送出給「採鮮農產」${grey==='keep'?'，已過截單，待採鮮確認':''}。`,time:full(TODAY())+' '+pad(now().getHours())+':'+pad(now().getMinutes()),un:true,go:'orders',seg:'sub'});
+  const wasEdit=editing;cart={};custom=[];cartNote='';editing=null;grey=null;leadOk=false;Object.keys(lineNotes).forEach(k=>delete lineNotes[k]);
+  sheet('',`<div class="ok"><div class="big">✓</div><h2>${wasEdit?'訂單已更新':'已收到訂單'}</h2><b>${no}</b><span class="hint">${STORES.find(s=>s.id===store).n}・${full(date)}${wk(date)} 交貨</span></div><div class="row2"><button class="btn plain" type="button" data-close>繼續下單</button><button class="btn pri" type="button" id="okGo">查看訂單</button></div>`,
+    ()=>{$('okGo').onclick=()=>{closeSheet();seg='sub';go('orders')}});
+  renderProducts();header();updBadge()}
+
+/* ---------- 訂單 ---------- */
+let adv={};
+function li(l){if(l.custom)return{n:l.custom+'（客訂）',u:l.unit,pr:null};const p=P.find(x=>x.id===l.pid);return{n:p.n,u:p.sp[l.si][0],pr:p.mk?null:p.sp[l.si][1]}}
+const oAmt=o=>o.amt??(o.st==='can'?0:o.lines.reduce((a,l)=>{const i=li(l);return a+(i.pr?i.pr*l.q:0)},0));
+const canEdit=o=>o.st==='sub'&&(o.date>TODAY()||(o.date===TODAY()&&hm()<60));
+function renderOrders(){document.querySelectorAll('#seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===seg));
+  const L=orders.filter(o=>o.st===seg&&(!adv.store||o.store===adv.store)&&(!adv.src||o.src===adv.src)&&(!adv.d1||o.date>=adv.d1)&&(!adv.d2||o.date<=adv.d2)&&(!adv.o1||o.created>=adv.o1)&&(!adv.o2||o.created<=adv.o2)&&(!adv.kw||o.no.includes(adv.kw)||o.lines.some(l=>li(l).n.includes(adv.kw))));
+  const on=Object.values(adv).some(Boolean);
+  $('olist').innerHTML=(on?`<div class="gut"><div class="in warnbar" style="display:flex;justify-content:space-between;align-items:center">已套用進階搜尋 <button class="btn sm plain" type="button" id="advClr">清除</button></div></div>`:'')+
+   (L.length?L.map(o=>`<article class="oc gut"><div class="in" style="display:flex;flex-direction:column;gap:4px;width:100%">
+    <div class="h"><span>${o.no}</span><span>📅 訂單日 ${full(o.created)}</span></div>
+    <div class="sup">採鮮農產 ${o.grey==='keep'?'<span class="pill">待確認</span>':''}${o.reason?`<span class="pill">${esc(o.reason)}</span>`:''}</div>
+    <div class="items">${o.lines.map(l=>li(l).n).join('、')}</div>
+    <div class="store">${STORES.find(s=>s.id===o.store).n}・${o.src}</div>
+    <div class="f"><span class="d">📅 交貨日期 ${full(o.date)}</span><span class="amt">${o.st==='done'?'總金額':'預估金額'} ${money(oAmt(o))}</span></div>
+    <div class="acts"><button class="btn outline" type="button" data-open="${o.no}">明細</button>${canEdit(o)?`<button class="btn outline" type="button" data-edit="${o.no}">修改</button><button class="btn outline" type="button" data-cancel="${o.no}" style="border-color:var(--bad);color:var(--bad)">取消</button>`:''}<button class="btn outline" type="button" data-again="${o.no}">再次下訂</button></div>
+   </div></article>`).join(''):`<div class="gut"><div class="in empty">沒有符合的訂單</div></div>`)}
+$('seg').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;seg=b.dataset.s;renderOrders()});
+function loadCart(o){cart={};custom=[];o.lines.forEach(l=>{if(l.custom)custom.push({n:l.custom,u:l.unit,q:l.q});else cart[l.pid+'_'+l.si]=l.q})}
+$('olist').addEventListener('click',e=>{if(e.target.closest('#advClr')){adv={};renderOrders();return}
+  const b=e.target.closest('button');if(!b)return;const o=orders.find(x=>x.no===(b.dataset.open||b.dataset.again||b.dataset.edit||b.dataset.cancel));if(!o)return;
+  if(b.dataset.open){const slip=slips.find(s=>s.date===o.date&&s.store===o.store&&o.st==='done');
+    sheet(o.no,`<div class="hint">${STORES.find(s=>s.id===o.store).n}・交貨 ${full(o.date)}${wk(o.date)}・訂單日 ${full(o.created)}・${o.src}</div>
+    <div class="tblwrap"><table class="tbl"><tr><th>品名</th><th class="r">訂購量</th><th class="r">單價</th><th class="r">小計</th></tr>${o.lines.map(l=>{const i=li(l);return `<tr><td>${esc(i.n)}</td><td class="r">${l.q} ${esc(i.u)}</td><td class="r">${i.pr?money(i.pr):'時價'}</td><td class="r">${i.pr?money(i.pr*l.q):'—'}</td></tr>`}).join('')}</table></div>
+    ${o.note?`<div class="hint">備註：${esc(o.note)}</div>`:''}${slip?`<button class="btn soft" type="button" id="toSlip">查看出貨明細（實出量、金額）</button>`:''}<button class="btn plain" type="button" data-close>關閉</button>`,
+    ()=>{if(slip)$('toSlip').onclick=()=>showSlip(slip)});return}
+  if(b.dataset.again){loadCart(o);editing=null;go('shop');setDate(earliest());openCart();toast('已帶入品項，價格依新交貨日重新計算');return}
+  if(b.dataset.edit){loadCart(o);editing=o.no;cartNote=o.note||'';go('shop');setDate(o.date);openCart();return}
+  if(b.dataset.cancel)sheet('取消訂單',`<p style="margin:0">取消後將無法恢復，請選擇取消原因：</p><div class="radio">${REASONS.map((r,i)=>`<label><input type="radio" name="rs" value="${r}">${r}</label>`).join('')}</div><div class="row2"><button class="btn grey" type="button" data-close>否</button><button class="btn or" type="button" id="cYes" disabled>是，取消</button></div>`,
+    ()=>{$('shB').onchange=()=>$('cYes').disabled=false;$('cYes').onclick=()=>{o.st='can';o.reason=document.querySelector('[name=rs]:checked').value;notes.unshift({t:'訂單已取消',b:`訂單 ${o.no} 已取消（${o.reason}）。`,time:full(TODAY())+' '+pad(now().getHours())+':'+pad(now().getMinutes()),un:true,go:'orders',seg:'can'});closeSheet();renderOrders();updBadge();toast('訂單已取消')}})});
+function openAdv(){sheet('進階搜尋',`
+  <div class="field"><span>訂單日期</span><div class="two"><input type="date" id="aO1" value="${adv.o1||''}"><span>～</span><input type="date" id="aO2" value="${adv.o2||''}"></div></div>
+  <div class="field"><span>交貨日期</span><div class="two"><input type="date" id="aD1" value="${adv.d1||''}"><span>～</span><input type="date" id="aD2" value="${adv.d2||''}"></div></div>
+  <div class="field"><span>店別</span><select id="aS"><option value="">全部</option>${STORES.map(s=>`<option value="${s.id}"${adv.store===s.id?' selected':''}>${s.n}</option>`).join('')}</select></div>
+  <div class="field"><span>訂購方式</span><select id="aSrc"><option value="">全部</option><option${adv.src==='LINE 下單'?' selected':''}>LINE 下單</option><option${adv.src==='採鮮代訂'?' selected':''}>採鮮代訂</option></select></div>
+  <div class="field"><span>關鍵字</span><input id="aK" placeholder="單號或品名" value="${esc(adv.kw||'')}"></div>
+  <div class="row2"><button class="btn grey" type="button" id="aClr">清除條件</button><button class="btn pri" type="button" id="aGo">查詢</button></div>`,
+  ()=>{$('aClr').onclick=()=>{adv={};closeSheet();renderOrders()};$('aGo').onclick=()=>{adv={o1:$('aO1').value,o2:$('aO2').value,d1:$('aD1').value,d2:$('aD2').value,store:$('aS').value,src:$('aSrc').value,kw:$('aK').value.trim()};closeSheet();renderOrders()}})}
+
+/* ---------- 通知 ---------- */
+let nFilter='';
+function renderNotes(){const L=notes.map((n,i)=>[n,i]).filter(([n])=>!nFilter||n.b.includes(nFilter)||n.t.includes(nFilter));
+  $('nlist').innerHTML=(nFilter?`<div class="gut" style="padding-block:8px"><div class="in warnbar" style="display:flex;justify-content:space-between;align-items:center">搜尋：${esc(nFilter)}<button class="btn sm plain" type="button" id="nClr">清除</button></div></div>`:'')+
+   L.map(([n,i])=>`<button class="nt gut${n.un?' unread':''}" type="button" data-n="${i}"><span class="tx"><b>${n.t}</b><span>${esc(n.b)}</span><time>${n.time}</time></span><i class="dot"></i></button>`).join('');updBadge()}
+function updBadge(){$('nBadge').textContent=notes.filter(n=>n.un).length||''}
+$('nlist').addEventListener('click',e=>{if(e.target.closest('#nClr')){nFilter='';renderNotes();return}const b=e.target.closest('[data-n]');if(!b)return;const n=notes[+b.dataset.n];n.un=false;updBadge();if(n.go){if(n.seg)seg=n.seg;go(n.go)}else renderNotes()});
+
+/* ---------- 出貨明細／分析 ---------- */
+$('sFrom').value=TODAY().slice(0,8)+'01';$('sTo').value=TODAY();
+const sAmt=s=>s.lines.reduce((a,l)=>a+Math.round(parseFloat(l[1])*l[3]),0);
+function renderSlips(){const f=$('sFrom').value,t=$('sTo').value,show=$('showPay').checked;
+  const L=slips.filter(s=>s.store===store&&s.date>=f&&s.date<=t);
+  $('sCount').textContent=`${STORES.find(s=>s.id===store).n}・${md(f)}～${md(t)}・${L.length} 張`;$('sSum').textContent=money(L.reduce((a,s)=>a+sAmt(s),0));
+  $('slist').innerHTML=L.length?L.map(s=>`<button class="oc" type="button" data-slip="${s.no}" style="border:0;border-radius:8px;text-align:left;width:100%">
+    <div class="h"><span>${s.no}</span>${show?`<span class="pill" style="${s.paid?'background:var(--accent-soft);color:var(--accent)':''}">${s.paid?'已收款':'未收款'}</span>`:''}</div>
+    <div class="items">${s.lines.map(l=>l[0]).join('、')}</div>
+    <div class="f"><span class="d">📅 交貨日期 ${full(s.date)}</span><span class="amt">總金額 ${money(sAmt(s))}</span></div></button>`).join('')
+    +`<button class="btn soft" type="button" id="exp">存成圖片（傳給會計）</button>`:'<div class="empty">這段期間沒有出貨明細</div>'}
+function showSlip(s){sheet('出貨明細 '+s.no,`<div class="hint">${STORES.find(x=>x.id===s.store).n}・交貨 ${full(s.date)}${wk(s.date)}${$('showPay').checked?'・'+(s.paid?'已收款':'未收款'):''}</div>
+  <div class="tblwrap"><table class="tbl"><tr><th>品名</th><th class="r">實出量</th><th class="r">單價</th><th class="r">小計</th></tr>${s.lines.map(l=>`<tr><td>${esc(l[0])}</td><td class="r">${l[1]} ${l[2]}</td><td class="r">${money(l[3])}</td><td class="r">${money(Math.round(parseFloat(l[1])*l[3]))}</td></tr>`).join('')}</table></div>
+  <div class="total"><span>合計</span><b>${money(sAmt(s))}</b></div><p class="hint">金額＝實出量 × 單價，與採鮮出貨單一致。</p><button class="btn plain" type="button" data-close>關閉</button>`)}
+['sFrom','sTo'].forEach(i=>$(i).addEventListener('change',renderSlips));$('showPay').addEventListener('change',()=>{if(view==='slips')renderSlips()});
+$('slist').addEventListener('click',e=>{if(e.target.closest('#exp')){toast('正式版會產生 JPG 圖片');return}const c=e.target.closest('[data-slip]');if(c)showSlip(slips.find(x=>x.no===c.dataset.slip))});
+function renderPrice(){const m={};slips.filter(s=>s.store===store).forEach(s=>s.lines.forEach(l=>{(m[l[0]]=m[l[0]]||[]).push(l[3])}));
+  $('plist2').innerHTML=Object.entries(m).map(([n,a])=>`<div class="oc" style="border-radius:8px"><div class="sup" style="font-size:17px">${esc(n)}</div><div class="stat"><span>平均單價<b>${money(a.reduce((x,y)=>x+y,0)/a.length)}</b></span><span>最高單價<b>${money(Math.max(...a))}</b></span><span>最低單價<b>${money(Math.min(...a))}</b></span></div></div>`).join('')||'<div class="empty">沒有資料</div>'}
+function renderStats(){const tot=id=>slips.filter(s=>s.store===id).reduce((a,s)=>a+sAmt(s),0);
+  $('stlist').innerHTML=`<div class="oc" style="border-radius:8px"><div class="sup">採鮮農產 ${money(STORES.reduce((a,s)=>a+tot(s.id),0))}</div>${STORES.map(s=>`<div class="f" style="border-top:1px solid var(--line);padding-top:8px"><span>${s.n}</span><span class="amt">${money(tot(s.id))}</span></div>`).join('')}</div>`}
+
+/* ---------- 個人 ---------- */
+function openStores(){sheet('切換店家',`<div class="radio">${STORES.map(s=>`<label><input type="radio" name="st" value="${s.id}"${s.id===store?' checked':''}><span>${s.n}<br><small class="hint">${s.a}</small></span></label>`).join('')}</div><button class="btn soft" type="button" id="applyStore">＋ 申請綁定新店家</button><button class="btn plain" type="button" data-close>關閉</button>`,
+  ()=>{$('shB').onchange=e=>{if(e.target.name==='st'){store=e.target.value;closeSheet();header();renderProducts();if(view==='orders')renderOrders();if(view==='slips')renderSlips();toast('已切換到 '+STORES.find(s=>s.id===store).n)}};
+    $('applyStore').onclick=()=>info('apply')})}
+const INFO={
+ setting:['個人設定',`<label>姓名<input value="王小姐"></label><label>手機<input type="tel" value="0912-***-***"></label><p class="hint">以 LINE 帳號登入，不需密碼。</p><button class="btn pri" type="button" data-close>確認</button>`],
+ stores:null,
+ invite:['邀請好友',`<div style="align-self:center;width:180px;height:180px;background:repeating-conic-gradient(var(--fg) 0 25%,var(--card) 0 50%) 0 0/24px 24px;border:10px solid var(--card);outline:1px solid var(--line)"></div><p style="text-align:center;margin:0">掃描加入採鮮 LINE 官方帳號<br><b>@nvy5669n</b></p><p class="hint">正式版顯示真的 QR Code；新朋友加入後需由採鮮核准才能下單。</p><button class="btn plain" type="button" data-close>關閉</button>`],
+ faq:['常見問題',`<p><b>怎麼知道下單成功？</b><br>送出後顯示單號，「通知」也會有一則「訂單已提交」。</p><p><b>可以改單嗎？</b><br>截單前在「訂單 → 已提交」按「修改」。</p><p><b>為什麼是時價？</b><br>價格變動大的商品以出貨明細為準。</p><p><b>為什麼找不到某些商品？</b><br>只顯示該交貨日有供應的商品，可用「加入客訂」。</p>`],
+ guide:['操作教學',`<p>1. 右上角日曆選交貨日<br>2. 點商品的橘色購物車，選規格、數量<br>3. 下方綠色列「去結帳」送出<br>4. 「訂單」查進度，「通知」看出貨狀況</p>`],
+ notice:['購物須知',`<table class="tbl"><tr><td>下單截止</td><td>交貨日當天凌晨 01:00<br><small class="hint">01:00～04:00 下單會詢問是否順延</small></td></tr><tr><td>配送區域</td><td>沙鹿、梧棲、清水、西屯、太平</td></tr><tr><td>配送時間</td><td>依各路線安排</td></tr><tr><td>公告</td><td>${ANN}</td></tr></table>`],
+ contact:['聯絡採鮮',`<p>LINE 官方帳號 @nvy5669n<br>台中市沙鹿區平等路</p>`],
+ terms:['使用條款及隱私權政策',`<p class="hint">正式版放條款內容。</p>`],
+ apply:['申請綁定新店家',`<label>店名<input placeholder="例：清水麵店"></label><label>送貨地址<input placeholder="例：清水區中山路 1 號"></label><label>聯絡電話<input type="tel" placeholder="09xx-xxx-xxx"></label><p class="hint">送出後由採鮮核准，核准後即可切換到該店下單。</p><button class="btn pri" type="button" data-close>送出申請（樣品）</button>`]};
+function info(k){if(k==='stores')return openStores();const[t,h]=INFO[k];sheet(t,h+(h.includes('data-close')?'':'<button class="btn plain" type="button" data-close>關閉</button>'))}
+$('openNotice').addEventListener('click',()=>info('notice'));
+document.addEventListener('click',e=>{const s=e.target.closest('[data-sheet]');if(s){info(s.dataset.sheet);return}const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
+
+/* ---------- 分頁 ---------- */
+function go(v){if(!(v in TITLES))v='shop';view=v;Object.keys(TITLES).forEach(k=>$('v-'+k).hidden=k!==v);
+  document.querySelectorAll('nav.tabbar button').forEach(b=>b.dataset.v===(PARENT[v]||v)?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+  header();if(v==='orders')renderOrders();if(v==='notes')renderNotes();if(v==='slips')renderSlips();if(v==='price')renderPrice();if(v==='stats')renderStats();renderCartBar();window.scrollTo(0,0)}
+document.querySelector('nav.tabbar').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)});
+
+renderCats();setDate(earliest());updBadge();go((location.hash||'').slice(1));
+</script>
+</body>
+</html>
