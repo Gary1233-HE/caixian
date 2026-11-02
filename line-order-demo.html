@@ -50,8 +50,10 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stro
 
 /* 頂部 */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;background:var(--head);color:var(--head-fg)}
-.top .bar{display:grid;grid-template-columns:96px 1fr 96px;align-items:center;padding-block:10px;min-height:64px}
-.top h1{margin:0;text-align:center;font-weight:700;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .bar{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding-block:10px;min-height:64px}
+.brand{font-family:var(--f-display);font-size:19px;white-space:nowrap;justify-self:start}
+.ctmenu{flex:none;border:0;border-right:1px solid var(--line);background:transparent;color:var(--accent);padding:6px 12px 6px 0;display:flex;align-items:center}
+.top h1{margin:0;text-align:center;font-weight:700;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
 .top h1 button{border:0;background:transparent;font-weight:700;font-size:20px;text-decoration:underline;text-underline-offset:4px;color:var(--head-fg)}
 .hb{width:44px;height:44px;border-radius:50%;border:0;background:var(--head-btn);color:var(--head-btn-fg);display:inline-flex;align-items:center;justify-content:center;position:relative}
 .hpill{display:inline-flex;background:var(--head-btn);border-radius:999px;justify-self:end}
@@ -237,7 +239,7 @@ nav.tabbar button[aria-current="page"]{color:var(--accent)}
 
 <!-- 商品 -->
 <section id="v-shop">
-  <div class="cats gut"><div class="in" style="display:flex;width:100%"><div class="scroll" id="cats"></div><button class="ctfav" type="button" id="favTab" aria-pressed="false" aria-label="常用商品">♥</button></div></div>
+  <div class="cats gut"><div class="in" style="display:flex;width:100%"><button class="ctmenu" type="button" id="catMenu" aria-label="全部分類"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1" fill="currentColor"/><rect x="13" y="4" width="7" height="7" rx="1" fill="currentColor"/><rect x="4" y="13" width="7" height="7" rx="1" fill="currentColor"/><rect x="13" y="13" width="7" height="7" rx="1" fill="currentColor"/></svg></button><div class="scroll" id="cats"></div><button class="ctfav" type="button" id="favTab" aria-pressed="false" aria-label="常用商品">♥</button></div></div>
   <main class="gut"><div class="in" style="display:flex;flex-direction:column;gap:10px">
     <div class="subs" id="subs" hidden></div>
     <div class="inforow">
@@ -418,11 +420,11 @@ const slips=[
  {no:'SD20261022001',store:'B',date:addD(TODAY(),-10),paid:true,lines:[['青蔥','1.9','公斤',130],['洋蔥/進口','1','袋(20公斤)',620],['大漢板豆腐','10','盒',25]]}
 ];
 let notes=[
- {t:'出貨修改',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產」修改出貨明細，立即點擊查看詳細內容。',time:full(TODAY())+' 05:51',un:true,go:'orders',seg:'ship'},
- {t:'訂單出貨中',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產」確認，正在進行出貨準備。',time:full(TODAY())+' 02:55',un:true,go:'orders',seg:'ship'},
+ {t:'出貨修改',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產行」修改出貨明細，立即點擊查看詳細內容。',time:full(TODAY())+' 05:51',un:true,go:'orders',seg:'ship'},
+ {t:'訂單出貨中',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產行」確認，正在進行出貨準備。',time:full(TODAY())+' 02:55',un:true,go:'orders',seg:'ship'},
  {t:'會員審核未通過',b:'「早餐店」綁定申請未通過：地址不在配送區域，請用 LINE 聯絡採鮮。',time:'2026/10/21 09:30',un:false,sheet:'member'},
  {t:'公休公告',b:'11/16（日）公休，11/15 請提早下單。',time:full(addD(TODAY(),-1))+' 18:00',un:true},
- {t:'訂單已出貨',b:'訂單 SO20261027013，交貨日 '+full(addD(TODAY(),-5))+'，已從「採鮮農產」出貨囉～',time:full(addD(TODAY(),-5))+' 04:05',un:false,go:'orders',seg:'done'},
+ {t:'訂單已出貨',b:'訂單 SO20261027013，交貨日 '+full(addD(TODAY(),-5))+'，已從「採鮮農產行」出貨囉～',time:full(addD(TODAY(),-5))+' 04:05',un:false,go:'orders',seg:'done'},
  {t:'訂單已取消',b:'訂單 SO20261023005 已取消（重複訂購）。',time:full(addD(TODAY(),-10))+' 21:12',un:false,go:'orders',seg:'can'}
 ];
 
@@ -431,9 +433,9 @@ const TITLES={shop:null,orders:'我的訂單',notes:'通知',me:'個人',slips:'
 const PARENT={slips:'me',price:'me',stats:'me'};
 function header(){const n=Object.values(cart).length+custom.length;
   let L='',R='';
-  if(view==='shop'){L=`<button class="hb" type="button" id="hCat" aria-label="分類">${SVG.menu}</button>`;
+  if(view==='shop'){L=`<span class="brand">採鮮農產行</span>`;
     R=`<span class="hpill"><button class="hb" type="button" id="hSearch" aria-label="搜尋">${SVG.search}</button><button class="hb" type="button" id="hCart" aria-label="購物車">${SVG.cart}<i class="cnt">${n||''}</i></button></span>`;
-    $('hTitle').innerHTML=`<button type="button" id="hStore">採鮮農產・${STORES.find(s=>s.id===store).n} ▾</button>`}
+    $('hTitle').innerHTML=`<button type="button" id="hStore">${STORES.find(s=>s.id===store).n} ▾</button>`}
   else{$('hTitle').textContent=TITLES[view];
     if(PARENT[view])L=`<button class="hb" type="button" id="hBack" aria-label="返回">${SVG.back}</button>`;
     if(view==='orders')R=`<button class="hb" type="button" id="hFilter" aria-label="進階搜尋">${SVG.filter}</button>`;
@@ -470,6 +472,7 @@ function renderCats(){$('cats').innerHTML=['全部',...Object.keys(CATS)].map(c=
   const subs=!favOnly&&CATS[cat]||[];$('subs').hidden=!subs.length;
   $('subs').innerHTML=subs.length?['',...subs].map(s=>`<button class="chip" type="button" data-s="${s}" aria-pressed="${s===sub}">${s||'全部'}</button>`).join(''):''}
 $('cats').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;cat=b.dataset.c;sub='';favOnly=false;renderCats();renderProducts()});
+$('catMenu').addEventListener('click',()=>openCats());
 $('favTab').addEventListener('click',()=>{favOnly=!favOnly;renderCats();renderProducts()});
 $('subs').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;sub=b.dataset.s;renderCats();renderProducts()});
 $('q').addEventListener('input',renderProducts);
@@ -577,7 +580,7 @@ function mergeInto(o){lines().forEach(l=>{if(l.custom){o.lines.push({custom:l.cu
 function place(){const L=lines().map(l=>l.custom?{custom:l.custom,unit:l.u,q:l.q}:{pid:l.p.id,si:l.si,q:l.q,note:lineNotes[l.k]});let no;
   if(editing){const o=orders.find(x=>x.no===editing);Object.assign(o,{date,lines:L,note:cartNote,store});no=o.no}
   else{no='SO'+TODAY().replace(/-/g,'')+pad(orders.filter(o=>o.created===TODAY()).length+4).padStart(3,'0');orders.unshift({no,store,date,created:TODAY(),st:'sub',note:cartNote,src:'LINE 下單',lines:L,grey})}
-  notes.unshift({t:editing?'訂單已修改':'訂單已提交',b:`訂單 ${no}，交貨日 ${full(date)}，已送出給「採鮮農產」${grey==='keep'?'，已過截單，待採鮮確認':''}。`,time:full(TODAY())+' '+pad(now().getHours())+':'+pad(now().getMinutes()),un:true,go:'orders',seg:'sub'});
+  notes.unshift({t:editing?'訂單已修改':'訂單已提交',b:`訂單 ${no}，交貨日 ${full(date)}，已送出給「採鮮農產行」${grey==='keep'?'，已過截單，待採鮮確認':''}。`,time:full(TODAY())+' '+pad(now().getHours())+':'+pad(now().getMinutes()),un:true,go:'orders',seg:'sub'});
   const wasEdit=editing;cart={};custom=[];cartNote='';editing=null;grey=null;leadOk=false;warnOk=false;dupOk=false;Object.keys(lineNotes).forEach(k=>delete lineNotes[k]);
   sheet('',`<div class="ok"><div class="big">✓</div><h2>${wasEdit?'訂單已更新':'已收到訂單'}</h2><b>${no}</b><span class="hint">${STORES.find(s=>s.id===store).n}・${full(date)}${wk(date)} 交貨</span></div><div class="row2"><button class="btn plain" type="button" data-close>繼續下單</button><button class="btn pri" type="button" id="okGo">查看訂單</button></div>`,
     ()=>{$('okGo').onclick=()=>{closeSheet();seg='sub';go('orders')}});
@@ -594,7 +597,7 @@ function renderOrders(){document.querySelectorAll('#seg button').forEach(b=>b.se
   $('olist').innerHTML=(on?`<div class="gut"><div class="in warnbar" style="display:flex;justify-content:space-between;align-items:center">已套用進階搜尋 <button class="btn sm plain" type="button" id="advClr">清除</button></div></div>`:'')+
    (L.length?L.map(o=>`<article class="oc gut"><div class="in" style="display:flex;flex-direction:column;gap:4px;width:100%">
     <div class="h"><span>${o.no}</span><span>📅 訂單日 ${full(o.created)}</span></div>
-    <div class="sup">採鮮農產 ${o.grey==='keep'?'<span class="pill">待確認</span>':''}${o.reason?`<span class="pill">${esc(o.reason)}</span>`:''}</div>
+    <div class="sup">採鮮農產行 ${o.grey==='keep'?'<span class="pill">待確認</span>':''}${o.reason?`<span class="pill">${esc(o.reason)}</span>`:''}</div>
     <div class="items">${o.lines.map(l=>li(l).n).join('、')}</div>
     <div class="store">${STORES.find(s=>s.id===o.store).n}・${o.src}</div>
     <div class="f"><span class="d">📅 交貨日期 ${full(o.date)}</span><span class="amt">${o.st==='done'?'總金額':'預估金額'} ${money(oAmt(o))}</span></div>
@@ -649,7 +652,7 @@ $('slist').addEventListener('click',e=>{if(e.target.closest('#exp')){toast('正�
 function renderPrice(){const m={};slips.filter(s=>s.store===store).forEach(s=>s.lines.forEach(l=>{(m[l[0]]=m[l[0]]||[]).push(l[3])}));
   $('plist2').innerHTML=Object.entries(m).map(([n,a])=>`<div class="oc" style="border-radius:8px"><div class="sup" style="font-size:17px">${esc(n)}</div><div class="stat"><span>平均單價<b>${money(a.reduce((x,y)=>x+y,0)/a.length)}</b></span><span>最高單價<b>${money(Math.max(...a))}</b></span><span>最低單價<b>${money(Math.min(...a))}</b></span></div></div>`).join('')||'<div class="empty">沒有資料</div>'}
 function renderStats(){const tot=id=>slips.filter(s=>s.store===id).reduce((a,s)=>a+sAmt(s),0);
-  $('stlist').innerHTML=`<div class="oc" style="border-radius:8px"><div class="sup">採鮮農產 ${money(STORES.reduce((a,s)=>a+tot(s.id),0))}</div>${STORES.map(s=>`<div class="f" style="border-top:1px solid var(--line);padding-top:8px"><span>${s.n}</span><span class="amt">${money(tot(s.id))}</span></div>`).join('')}</div>`}
+  $('stlist').innerHTML=`<div class="oc" style="border-radius:8px"><div class="sup">採鮮農產行 ${money(STORES.reduce((a,s)=>a+tot(s.id),0))}</div>${STORES.map(s=>`<div class="f" style="border-top:1px solid var(--line);padding-top:8px"><span>${s.n}</span><span class="amt">${money(tot(s.id))}</span></div>`).join('')}</div>`}
 
 /* ---------- 個人 ---------- */
 function openStores(){sheet('切換店家',`<div class="radio">${STORES.map(s=>`<label><input type="radio" name="st" value="${s.id}"${s.id===store?' checked':''}><span>${s.n}<br><small class="hint">${s.a}</small></span></label>`).join('')}</div><button class="btn soft" type="button" id="applyStore">＋ 申請綁定新店家</button><button class="btn plain" type="button" data-close>關閉</button>`,
