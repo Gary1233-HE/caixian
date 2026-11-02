@@ -215,6 +215,7 @@ nav.tabbar button[aria-current="page"]{color:var(--accent)}
 <div class="demo gut"><div class="in">
   <b>樣品資料</b>
   <label>模擬時間 <select id="simTime"><option value="now">現在</option><option value="00:30">00:30 截單前</option><option value="02:00">02:00 灰色時段</option><option value="05:00">05:00 已換日</option></select></label>
+  <label>異常倍數 <select id="mult"><option>1.5</option><option selected>2</option><option>3</option></select> 倍（後台設定）</label>
   <label><input type="checkbox" id="showPay" checked> 出貨明細顯示收款狀態（後台設定）</label>
 </div></div>
 
@@ -316,31 +317,45 @@ nav.tabbar button[aria-current="page"]{color:var(--accent)}
 const CATS={'蔬菜蕈菇類':['葉菜','根莖','瓜果','菇類'],'辛香料':[],'豆製品':[],'截切':[]};
 const COLORS=['#7cb342','#e67c3b','#c0ca33','#8d6e63','#43a047','#ef6c00','#6d8b3a','#a1887f'];
 const P=[
- {id:1,n:'高麗菜原封',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',28],['顆',55]]},
- {id:2,n:'大白菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',22]]},
- {id:3,n:'美生菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',45]],mk:true},
- {id:4,n:'小白菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',35],['把',20]]},
- {id:5,n:'雪里紅',c:'蔬菜蕈菇類',s:'葉菜',sp:[['斤',40]]},
- {id:6,n:'紅蘿蔔',c:'蔬菜蕈菇類',s:'根莖',sp:[['斤',25]],mk:true},
- {id:7,n:'馬鈴薯(本產)',c:'蔬菜蕈菇類',s:'根莖',sp:[['斤',30]],mk:true},
- {id:8,n:'洋蔥/進口',c:'蔬菜蕈菇類',s:'根莖',sp:[['斤',22],['袋(20公斤)',620]]},
- {id:9,n:'白蘿蔔',c:'蔬菜蕈菇類',s:'根莖',sp:[['條',30],['斤',18]]},
- {id:10,n:'小黃瓜',c:'蔬菜蕈菇類',s:'瓜果',sp:[['斤',42]]},
- {id:11,n:'牛番茄',c:'蔬菜蕈菇類',s:'瓜果',sp:[['斤',48],['箱(10公斤)',780]],lead:2},
- {id:12,n:'冷凍秋葵',c:'蔬菜蕈菇類',s:'瓜果',sp:[['包',65]]},
- {id:13,n:'杏鮑菇',c:'蔬菜蕈菇類',s:'菇類',sp:[['包',38],['箱(3公斤)',420]]},
- {id:14,n:'金針菇',c:'蔬菜蕈菇類',s:'菇類',sp:[['包',15]]},
- {id:15,n:'青蔥',c:'辛香料',sp:[['斤',75]],mk:true},
- {id:16,n:'蒜角(粗)',c:'辛香料',sp:[['斤',90]]},
- {id:17,n:'老薑',c:'辛香料',sp:[['斤',60]]},
- {id:18,n:'九層塔',c:'辛香料',sp:[['斤',120]]},
- {id:19,n:'大漢板豆腐',c:'豆製品',sp:[['盒',25]]},
- {id:20,n:'大漢三角油豆腐',c:'豆製品',sp:[['包',35]]},
- {id:21,n:'綠豆芽',c:'豆製品',sp:[['斤',20]]},
- {id:22,n:'薑絲',c:'截切',sp:[['斤',110]]},
- {id:23,n:'高麗菜絲',c:'截切',sp:[['斤',45]]}
+ {id:1,n:'高麗菜原封',c:'蔬菜蕈菇類',s:'葉菜',sp:[{u:'公斤',pr:46},{u:'顆',pu:'公斤',pr:46},{u:'箱(20公斤)',pr:880}]},
+ {id:2,n:'大白菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[{u:'公斤',pr:36}]},
+ {id:3,n:'美生菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[{u:'公斤',pr:75}],mk:true},
+ {id:4,n:'小白菜',c:'蔬菜蕈菇類',s:'葉菜',sp:[{u:'公斤',pr:58},{u:'把',pr:20}]},
+ {id:5,n:'雪里紅',c:'蔬菜蕈菇類',s:'葉菜',sp:[{u:'公斤',pr:66}]},
+ {id:6,n:'紅蘿蔔',c:'蔬菜蕈菇類',s:'根莖',sp:[{u:'公斤',pr:42}],mk:true},
+ {id:7,n:'馬鈴薯(本產)',c:'蔬菜蕈菇類',s:'根莖',sp:[{u:'公斤',pr:50}],mk:true},
+ {id:8,n:'洋蔥/進口',c:'蔬菜蕈菇類',s:'根莖',sp:[{u:'公斤',pr:36},{u:'袋(20公斤)',pr:620}]},
+ {id:9,n:'白蘿蔔',c:'蔬菜蕈菇類',s:'根莖',sp:[{u:'條',pr:30},{u:'公斤',pr:30}]},
+ {id:10,n:'小黃瓜',c:'蔬菜蕈菇類',s:'瓜果',sp:[{u:'公斤',pr:70}]},
+ {id:11,n:'牛番茄',c:'蔬菜蕈菇類',s:'瓜果',sp:[{u:'公斤',pr:80},{u:'箱(10公斤)',pr:780}],lead:2},
+ {id:12,n:'冷凍秋葵',c:'蔬菜蕈菇類',s:'瓜果',sp:[{u:'包',pr:65,min:5,mult:5}]},
+ {id:13,n:'杏鮑菇',c:'蔬菜蕈菇類',s:'菇類',sp:[{u:'包',pr:38},{u:'箱(3公斤)',pr:420}]},
+ {id:14,n:'金針菇',c:'蔬菜蕈菇類',s:'菇類',sp:[{u:'包',pr:15,min:3}]},
+ {id:15,n:'青蔥',c:'辛香料',sp:[{u:'公斤',pr:125,min:0.5}],mk:true},
+ {id:16,n:'蒜角(粗)',c:'辛香料',sp:[{u:'公斤',pr:150}]},
+ {id:17,n:'老薑',c:'辛香料',sp:[{u:'公斤',pr:100}]},
+ {id:18,n:'九層塔',c:'辛香料',sp:[{u:'公斤',pr:200,min:0.3}]},
+ {id:19,n:'大漢板豆腐',c:'豆製品',sp:[{u:'盒',pr:25}]},
+ {id:20,n:'大漢三角油豆腐',c:'豆製品',sp:[{u:'包',pr:35}]},
+ {id:21,n:'綠豆芽',c:'豆製品',sp:[{u:'公斤',pr:33}]},
+ {id:22,n:'薑絲',c:'截切',sp:[{u:'公斤',pr:180}]},
+ {id:23,n:'高麗菜絲',c:'截切',sp:[{u:'公斤',pr:75}]}
 ];
 const STORES=[{id:'A',n:'水煎包',a:'沙鹿區中山路 100 號'},{id:'B',n:'鐵板燒',a:'梧棲區文化路 50 號'}];
+/* 近 2 週同品項同規格平均訂量（樣品；正式版由 ERP 訂單計算） */
+const HIST={A:{'1_0':60,'8_0':10,'15_0':1.2,'19_0':6,'6_0':12,'13_0':4},B:{'15_0':2,'8_1':1,'19_0':10,'1_0':15}};
+const isKg=sp=>sp.u==='公斤';
+const byWeight=sp=>sp.pu&&sp.pu!==sp.u;
+/* 清單顯示規格：有公斤就顯示公斤，否則第一個（單一規格的包、盒） */
+const cardSi=p=>{const i=p.sp.findIndex(isKg);return i>=0?i:0};
+function priceTxt(p,sp){if(p.mk)return '時價';return money(sp.pr)+' / '+(sp.pu||sp.u)+(byWeight(sp)?'（論'+sp.u+'訂，依實際重量計價）':'')}
+/* 數量防呆：公斤小數 1 位、其他整數、倍數、最小量 */
+function norm(sp,q){const msg=[];if(!(q>0))return{v:0,msg};let v=isKg(sp)?Math.round(q*10)/10:Math.round(q);
+  if(v!==q)msg.push(isKg(sp)?'公斤最多到小數 1 位':sp.u+'只能是整數');
+  if(sp.mult&&v%sp.mult){v=Math.ceil(v/sp.mult)*sp.mult;msg.push(`以 ${sp.mult} ${sp.u}為單位`)}
+  if(sp.min&&v<sp.min){v=sp.min;msg.push(`最少訂 ${sp.min} ${sp.u}`)}
+  if(v<=0){v=isKg(sp)?0.1:1}
+  return{v,msg}}
 const REASONS=['重複訂購','接收時間無法配合','商品規格不符','數量填錯','其他'];
 const ANN='11/16（日）公休，11/15 請提早下單　｜　颱風過後葉菜價格波動大，以實際出貨為準';
 
@@ -381,10 +396,10 @@ let orders=[
  {no:'SO20260831005',store:'A',date:'2026-09-01',created:'2026-08-31',st:'can',reason:'數量填錯',src:'LINE 下單',lines:[{pid:1,si:0,q:30},{pid:16,si:0,q:2},{pid:22,si:0,q:1},{pid:21,si:0,q:5},{pid:5,si:0,q:3}]}
 ];
 const slips=[
- {no:'SD20261102001',store:'A',date:addD(TODAY(),-1),paid:false,lines:[['高麗菜原封','125.4','斤',30]]},
- {no:'SD20261027001',store:'A',date:addD(TODAY(),-5),paid:false,lines:[['紅蘿蔔','20.6','斤',26],['高麗菜原封','118.2','斤',29]]},
- {no:'SD20261025001',store:'A',date:addD(TODAY(),-7),paid:true,lines:[['高麗菜原封','182','斤',30]]},
- {no:'SD20261022001',store:'B',date:addD(TODAY(),-10),paid:true,lines:[['青蔥','3.2','斤',78],['洋蔥/進口','30','斤',22],['大漢板豆腐','10','盒',25]]}
+ {no:'SD20261102001',store:'A',date:addD(TODAY(),-1),paid:false,lines:[['高麗菜原封','75.2','公斤',50]]},
+ {no:'SD20261027001',store:'A',date:addD(TODAY(),-5),paid:false,lines:[['紅蘿蔔','12.4','公斤',43],['高麗菜原封','70.9','公斤',48]]},
+ {no:'SD20261025001',store:'A',date:addD(TODAY(),-7),paid:true,lines:[['高麗菜原封','109.2','公斤',50]]},
+ {no:'SD20261022001',store:'B',date:addD(TODAY(),-10),paid:true,lines:[['青蔥','1.9','公斤',130],['洋蔥/進口','1','袋(20公斤)',620],['大漢板豆腐','10','盒',25]]}
 ];
 let notes=[
  {t:'出貨修改',b:'訂單 SO20261101024，交貨日 '+full(TODAY())+'，已被「採鮮農產」修改出貨明細，立即點擊查看詳細內容。',time:full(TODAY())+' 05:51',un:true,go:'orders',seg:'ship'},
@@ -447,31 +462,38 @@ const qtyOf=pid=>Object.entries(cart).filter(([k])=>k.split('_')[0]==pid).reduce
 function renderProducts(){const q=$('q').value.trim();
   const v=P.filter(p=>q?p.n.includes(q):favOnly?fav.has(p.id):(cat==='全部'||p.c===cat)&&(!sub||p.s===sub));
   $('ptime').textContent=`${v.length} 項商品・價格更新 ${md(TODAY())} 14:30・${md(date)} 交貨價`;
-  $('plist').innerHTML=v.length?v.map(p=>{const q=qtyOf(p.id);const[u,pr]=p.sp[0];return `<div class="pc${q?' on':''}" data-p="${p.id}">
+  $('plist').innerHTML=v.length?v.map(p=>{const q=qtyOf(p.id);const sp=p.sp[cardSi(p)];return `<div class="pc${q?' on':''}" data-p="${p.id}">
     <div class="thumb" style="background:${COLORS[p.id%COLORS.length]}">${p.n[0]}</div>
     <div class="info"><div class="nm">${p.n}${p.lead?`<i class="tag">需提前 ${p.lead} 天</i>`:''}</div>
-      <div class="row"><span class="pr">${p.mk?'時價':money(pr)+'<small> /'+u+'</small>'}</span>
+      <div class="row"><span class="pr">${p.mk?'時價':money(sp.pr)+'<small> /'+(sp.pu||sp.u)+'</small>'}</span>
         <button class="ib fav" type="button" data-fav aria-pressed="${fav.has(p.id)}" aria-label="常用">${SVG.heart}</button>
-        <button class="ib cart" type="button" data-add aria-label="加入購物車">${SVG.cart}${q?`<i class="q">${q}</i>`:''}</button></div>
-      ${p.sp.length>1?`<div class="meta">規格：${p.sp.map(s=>s[0]).join('／')}</div>`:''}</div></div>`}).join('')
+        <button class="ib cart" type="button" data-add aria-label="加入購物車">${SVG.cart}${q?`<i class="q">${p.sp.filter((_,i)=>cart[p.id+'_'+i]).length}</i>`:''}</button></div>
+      ${p.sp.length>1?`<div class="meta">${p.sp.length} 種規格：${p.sp.map(s=>s.u).join('／')}</div>`:(sp.min||sp.mult?`<div class="meta">${sp.mult?`以 ${sp.mult} ${sp.u}為單位`:`最少 ${sp.min} ${sp.u}`}</div>`:'')}</div></div>`}).join('')
     :`<div class="empty">${favOnly?'還沒有常用商品，點商品的 ♥ 加入':'找不到商品，可用下方「加入客訂」'}</div>`;
   renderCartBar()}
 $('plist').addEventListener('click',e=>{const c=e.target.closest('.pc');if(!c)return;const pid=+c.dataset.p;
   if(e.target.closest('[data-fav]')){fav.has(pid)?fav.delete(pid):fav.add(pid);toast(fav.has(pid)?'已加入常用':'已移出常用');renderProducts();return}
   openProduct(pid)});
-function openProduct(pid,si0){const p=P.find(x=>x.id===pid);let si=si0??(p.sp.findIndex((_,i)=>cart[pid+'_'+i])>=0?p.sp.findIndex((_,i)=>cart[pid+'_'+i]):0);
-  const draw=()=>{const[u,pr]=p.sp[si];const k=pid+'_'+si;
-    $('shB').innerHTML=`<div class="big-pr">${p.mk?'時價':money(pr)+' / '+u}</div>
-    ${p.lead?`<div class="warnbar">此商品需提前 ${p.lead} 天訂購</div>`:''}
-    <div><div class="hint" style="margin-bottom:6px">規格</div><div class="specs">${p.sp.map((s,i)=>`<button class="sp" type="button" data-si="${i}" aria-pressed="${i===si}">${s[0]}${cart[pid+'_'+i]?'・'+cart[pid+'_'+i]:''}</button>`).join('')}</div></div>
-    <div style="display:flex;align-items:center;gap:12px"><div class="step"><button type="button" data-d="-1" aria-label="減少">−</button><input id="pq" inputmode="decimal" value="${cart[k]||1}" aria-label="數量"><button type="button" data-d="1" aria-label="增加">+</button></div><span>${u}</span></div>
+function openProduct(pid){const p=P.find(x=>x.id===pid);const inCart=p.sp.findIndex((_,i)=>cart[pid+'_'+i]);
+  const usual=Object.keys(HIST[store]).find(k=>k.split('_')[0]==pid);
+  let si=inCart>=0?inCart:usual?+usual.split('_')[1]:cardSi(p);
+  const draw=(msg)=>{const sp=p.sp[si];const k=pid+'_'+si;const avg=HIST[store][k];
+    $('shB').innerHTML=`${p.lead?`<div class="warnbar">此商品需提前 ${p.lead} 天訂購</div>`:''}
+    <div><div class="hint" style="margin-bottom:6px">規格</div><div class="specs">${p.sp.map((s,i)=>`<button class="sp" type="button" data-si="${i}" aria-pressed="${i===si}">${s.u}${cart[pid+'_'+i]?'・'+cart[pid+'_'+i]:''}</button>`).join('')}</div></div>
+    <div class="big-pr">${priceTxt(p,sp)}</div>
+    <div style="display:flex;align-items:center;gap:12px"><div class="step"><button type="button" data-d="-1" aria-label="減少">−</button><input id="pq" inputmode="${isKg(sp)?'decimal':'numeric'}" value="${cart[k]||sp.min||sp.mult||1}" aria-label="數量"><button type="button" data-d="1" aria-label="增加">+</button></div><span style="font-size:18px">${sp.u}</span></div>
+    <p class="hint">${[isKg(sp)?'可填到小數 1 位（例 2.5）':'只能填整數',sp.mult?`以 ${sp.mult} ${sp.u}為單位`:'',sp.min?`最少 ${sp.min} ${sp.u}`:'',avg?`這家店近 2 週平均 ${avg} ${sp.u}`:''].filter(Boolean).join('・')}</p>
+    ${msg&&msg.length?`<div class="warnbar">${msg.join('，')}，已自動調整，請確認數量</div>`:''}
     <input id="pnote" placeholder="單品備註（例：要小顆）" value="${esc(lineNotes[k]||'')}">
     <div class="row2">${cart[k]?`<button class="btn plain" type="button" id="pDel">移出購物車</button>`:`<button class="btn plain" type="button" data-close>取消</button>`}<button class="btn or" type="button" id="pAdd">${cart[k]?'更新數量':'加入購物車'}</button></div>`};
-  sheet(p.n,'',()=>{draw();$('shB').onclick=e=>{
+  sheet(p.n,'',()=>{draw();$('shB').onclick=e=>{const sp=p.sp[si];
     const s=e.target.closest('[data-si]');if(s){si=+s.dataset.si;draw();return}
-    const d=e.target.closest('[data-d]');if(d){$('pq').value=Math.max(0,Math.round(((parseFloat($('pq').value)||0)+(+d.dataset.d))*100)/100);return}
+    const d=e.target.closest('[data-d]');if(d){const step=sp.mult||1;let v=(parseFloat($('pq').value)||0)+(+d.dataset.d)*step;v=Math.max(sp.min||0,Math.round(v*10)/10);$('pq').value=v||'';return}
     const k=pid+'_'+si;
-    if(e.target.closest('#pAdd')){const q=parseFloat($('pq').value)||0;if(q>0)cart[k]=q;else delete cart[k];lineNotes[k]=$('pnote').value;closeSheet();renderProducts();header();toast(q>0?`${p.n} ${q} ${p.sp[si][0]} 已加入`:'已移出');$('shB').onclick=null}
+    if(e.target.closest('#pAdd')){const raw=parseFloat($('pq').value);
+      if(!(raw>0)){delete cart[k];closeSheet();renderProducts();header();$('shB').onclick=null;return}
+      const r=norm(sp,raw);if(r.msg.length&&r.v!==raw){$('pq').value=r.v;draw(r.msg);$('pq').value=r.v;return}
+      cart[k]=r.v;lineNotes[k]=$('pnote').value;closeSheet();renderProducts();header();toast(`${p.n} ${r.v} ${sp.u} 已加入`);$('shB').onclick=null}
     if(e.target.closest('#pDel')){delete cart[k];closeSheet();renderProducts();header();$('shB').onclick=null}}})}
 
 /* 客訂 */
@@ -482,17 +504,17 @@ $('openCustom').addEventListener('click',()=>sheet('加入客訂',`<p class="hin
   ()=>{$('cuAdd').onclick=()=>{const n=$('cuN').value.trim(),q=parseFloat($('cuQ').value);if(!n||!(q>0)){$('cuN').focus();return}custom.push({n,q,u:$('cuU').value});closeSheet();renderCartBar();header();toast('已加入客訂：'+n)}}));
 
 /* ---------- 購物車 ---------- */
-function lines(){const L=[];Object.entries(cart).forEach(([k,q])=>{const[pid,si]=k.split('_').map(Number);const p=P.find(x=>x.id===pid);L.push({k,p,si,q,u:p.sp[si][0],pr:p.mk?null:p.sp[si][1]})});custom.forEach((c,i)=>L.push({k:'c'+i,custom:c.n,u:c.u,q:c.q,pr:null}));return L}
+function lines(){const L=[];Object.entries(cart).forEach(([k,q])=>{const[pid,si]=k.split('_').map(Number);const p=P.find(x=>x.id===pid);const sp=p.sp[si];L.push({k,p,si,sp,q,u:sp.u,pr:p.mk||byWeight(sp)?null:sp.pr,tag:p.mk?'時價':byWeight(sp)?money(sp.pr)+'/'+sp.pu+'，依重量計價':''})});custom.forEach((c,i)=>L.push({k:'c'+i,custom:c.n,u:c.u,q:c.q,pr:null}));return L}
 function est(){const L=lines();return{n:L.length,amt:L.reduce((a,l)=>a+(l.pr?l.pr*l.q:0),0),mk:L.filter(l=>l.pr===null).length}}
-function renderCartBar(){const e=est();$('cartbar').hidden=!e.n||view!=='shop';$('cbN').textContent=e.n;$('cbAmt').textContent=money(e.amt);$('cbMk').textContent=e.mk?`另有 ${e.mk} 項時價／客訂，以出貨為準`:''}
+function renderCartBar(){const e=est();$('cartbar').hidden=!e.n||view!=='shop';$('cbN').textContent=e.n;$('cbAmt').textContent=money(e.amt);$('cbMk').textContent=e.mk?`另有 ${e.mk} 項時價／依重量／客訂，以出貨為準`:''}
 $('openCart2').addEventListener('click',()=>openCart());
 function openCart(){const draw=()=>{const L=lines(),e=est();
   $('shB').innerHTML=`${editing?`<div class="warnbar">正在修改訂單 ${editing}，送出後更新原訂單</div>`:''}
   <div class="datebar"><b>交貨日</b><button class="btn plain" type="button" id="cDate" style="flex:1">${full(date)}${wk(date)}</button></div>${$('dateWarn').innerHTML}
-  <div>${L.length?L.map(l=>`<div class="cl" data-k="${l.k}"><div><div class="nm">${esc(l.custom?l.custom+'（客訂）':l.p.n)}</div><div class="sub">${l.pr===null?(l.custom?'價格以出貨明細為準':'時價'):money(l.pr)+' / '+l.u+'　小計 '+money(l.pr*l.q)}${lineNotes[l.k]?'<br>備註：'+esc(lineNotes[l.k]):''}</div></div>
+  <div>${L.length?L.map(l=>`<div class="cl" data-k="${l.k}"><div><div class="nm">${esc(l.custom?l.custom+'（客訂）':l.p.n)}</div><div class="sub">${l.custom?'價格以出貨明細為準':l.pr===null?l.tag:money(l.pr)+' / '+l.u+'　小計 '+money(l.pr*l.q)}${lineNotes[l.k]?'<br>備註：'+esc(lineNotes[l.k]):''}</div></div>
     <div style="display:flex;gap:6px;align-items:center"><div class="step sm"><button type="button" data-d="-1" aria-label="減少">−</button><input inputmode="decimal" data-q value="${l.q}" aria-label="數量"><button type="button" data-d="1" aria-label="增加">+</button></div><span class="hint">${esc(l.u)}</span></div></div>`).join(''):'<div class="empty">購物車是空的</div>'}</div>
   <label class="hint">訂單備註（會印在分裝明細表）<textarea id="cNote" rows="2" placeholder="例：早上 7 點前送到後門">${esc(cartNote)}</textarea></label>
-  <div class="total"><span>預估金額${e.mk?`<br><small class="hint">另有 ${e.mk} 項時價／客訂未計入</small>`:''}</span><b>${money(e.amt)}</b></div>
+  <div class="total"><span>預估金額${e.mk?`<br><small class="hint">另有 ${e.mk} 項時價／依重量／客訂未計入</small>`:''}</span><b>${money(e.amt)}</b></div>
   <div class="row2"><button class="btn plain" type="button" data-close>繼續選購</button><button class="btn or" type="button" id="submit" ${L.length?'':'disabled'}>${editing?'更新訂單':'送出訂單'}</button></div>`};
   sheet('購物車','',()=>{draw();
     $('shB').onclick=e=>{const row=e.target.closest('.cl');const d=e.target.closest('[data-d]');
@@ -502,27 +524,46 @@ function openCart(){const draw=()=>{const L=lines(),e=est();
     $('shB').onchange=e=>{const row=e.target.closest('.cl');if(row&&e.target.matches('[data-q]')){chg(row.dataset.k,parseFloat(e.target.value)||0,false);draw()}}})}
 let cartNote='';
 function chg(k,v,rel){if(k[0]==='c'){const i=+k.slice(1);custom[i].q=Math.max(0,rel?custom[i].q+v:v);if(!custom[i].q)custom.splice(i,1)}
-  else{const q=Math.max(0,Math.round((rel?(cart[k]||0)+v:v)*100)/100);if(q)cart[k]=q;else delete cart[k]}renderProducts();header()}
+  else{const[pid,si]=k.split('_').map(Number);const sp=P.find(x=>x.id===pid).sp[si];const raw=rel?(cart[k]||0)+v*(sp.mult||1):v;if(raw<=0||(rel&&sp.min&&raw<sp.min&&v<0)){delete cart[k]}else{const r=norm(sp,raw);cart[k]=r.v;if(r.msg.length&&r.v!==raw)toast(r.msg.join('，')+'，已調整為 '+r.v)}}renderProducts();header()}
 function ask(t,body,btns){sheet(t,`<p style="margin:0">${body}</p><div class="row2">${btns.map((b,i)=>`<button class="btn ${b[2]||'plain'}" type="button" data-i="${i}">${b[0]}</button>`).join('')}</div>`,
   ()=>{$('shB').onclick=e=>{const b=e.target.closest('[data-i]');if(!b)return;$('shB').onclick=null;btns[+b.dataset.i][1]()}})}
+let warnOk=false,dupOk=false;
+function lineWarnings(){const W=[];const L=lines().filter(l=>l.p);const MULT=+$('mult').value;
+  L.forEach(l=>{const avg=HIST[store][l.k];
+    if(avg&&l.q>avg*MULT)W.push(`<b>${l.p.n}</b>：你訂的是 <b>${l.q} ${l.u}</b>，這家店近 2 週平均 ${avg} ${l.u}，確定嗎？`);
+    const usual=Object.keys(HIST[store]).filter(k=>k.split('_')[0]==l.p.id).map(k=>+k.split('_')[1]);
+    if(usual.length&&!usual.includes(l.si))W.push(`<b>${l.p.n}</b>：近 2 週都用「${usual.map(i=>l.p.sp[i].u).join('、')}」訂，這次是 <b>${l.q} ${l.u}</b>，單位沒選錯嗎？`)});
+  const byP={};L.forEach(l=>(byP[l.p.id]=byP[l.p.id]||[]).push(l));
+  Object.values(byP).filter(a=>a.length>1).forEach(a=>W.push(`<b>${a[0].p.n}</b> 同時訂了 ${a.map(l=>l.q+' '+l.u).join(' 和 ')}，確定嗎？`));
+  return W}
 function check(){const v=date;
   if(v===REST)return ask('公休日',`${md(v)}${wk(v)} 採鮮公休，要改到 ${md(addD(v,1))}${wk(addD(v,1))} 嗎？`,[['返回修改',openCart],['改到隔天',()=>{setDate(addD(v,1));check()},'or']]);
   if(inGrey(v)&&!grey)return ask('已過截單時間',`現在已過凌晨 01:00 截單。<br>要順延到 ${md(addD(v,1))}${wk(addD(v,1))} 交貨嗎？`,[['仍要今天（由採鮮確認）',()=>{grey='keep';check()}],['順延到明天',()=>{grey='next';setDate(addD(v,1));check()},'or']]);
   const days=(new Date(v)-new Date(TODAY()))/864e5;const s=lines().filter(l=>l.p&&l.p.lead&&days<l.p.lead);
   if(s.length&&!leadOk)return ask('需提前訂購',`${s.map(l=>l.p.n+'（需提前 '+l.p.lead+' 天）').join('、')} 來不及在 ${md(v)} 交貨。`,[['返回修改',openCart],['仍送出，由採鮮確認',()=>{leadOk=true;check()},'or']]);
+  const W=lineWarnings();
+  if(W.length&&!warnOk)return ask('請確認數量',W.map(w=>`<span style="display:block;padding:8px 0;border-top:1px solid var(--line)">${w}</span>`).join(''),[['返回修改',openCart],['確認無誤',()=>{warnOk=true;check()},'or']]);
+  const dup=!editing&&orders.find(o=>o.store===store&&o.date===v&&o.st==='sub');
+  if(dup&&!dupOk)return ask('同一天已有訂單',`${STORES.find(x=>x.id===store).n} 在 ${md(v)}${wk(v)} 已有一張訂單 <b>${dup.no}</b>（${dup.lines.map(l=>li(l).n).join('、')}）。<br>要把這次的品項併入那張，還是另開新單？`,
+    [['併入原訂單',()=>mergeInto(dup),'or'],['另開新單',()=>{dupOk=true;check()}],['返回修改',openCart]]);
   place()}
+function mergeInto(o){lines().forEach(l=>{if(l.custom){o.lines.push({custom:l.custom,unit:l.u,q:l.q});return}
+    const ex=o.lines.find(x=>x.pid===l.p.id&&x.si===l.si);if(ex)ex.q=Math.round((ex.q+l.q)*10)/10;else o.lines.push({pid:l.p.id,si:l.si,q:l.q,note:lineNotes[l.k]})});
+  if(cartNote)o.note=[o.note,cartNote].filter(Boolean).join('；');
+  editing=o.no;const L=o.lines;cart={};custom=[];L.forEach(l=>{if(l.custom)custom.push({n:l.custom,u:l.unit,q:l.q});else cart[l.pid+'_'+l.si]=l.q});cartNote=o.note||'';
+  warnOk=true;place()}
 function place(){const L=lines().map(l=>l.custom?{custom:l.custom,unit:l.u,q:l.q}:{pid:l.p.id,si:l.si,q:l.q,note:lineNotes[l.k]});let no;
   if(editing){const o=orders.find(x=>x.no===editing);Object.assign(o,{date,lines:L,note:cartNote,store});no=o.no}
   else{no='SO'+TODAY().replace(/-/g,'')+pad(orders.filter(o=>o.created===TODAY()).length+4).padStart(3,'0');orders.unshift({no,store,date,created:TODAY(),st:'sub',note:cartNote,src:'LINE 下單',lines:L,grey})}
   notes.unshift({t:editing?'訂單已修改':'訂單已提交',b:`訂單 ${no}，交貨日 ${full(date)}，已送出給「採鮮農產」${grey==='keep'?'，已過截單，待採鮮確認':''}。`,time:full(TODAY())+' '+pad(now().getHours())+':'+pad(now().getMinutes()),un:true,go:'orders',seg:'sub'});
-  const wasEdit=editing;cart={};custom=[];cartNote='';editing=null;grey=null;leadOk=false;Object.keys(lineNotes).forEach(k=>delete lineNotes[k]);
+  const wasEdit=editing;cart={};custom=[];cartNote='';editing=null;grey=null;leadOk=false;warnOk=false;dupOk=false;Object.keys(lineNotes).forEach(k=>delete lineNotes[k]);
   sheet('',`<div class="ok"><div class="big">✓</div><h2>${wasEdit?'訂單已更新':'已收到訂單'}</h2><b>${no}</b><span class="hint">${STORES.find(s=>s.id===store).n}・${full(date)}${wk(date)} 交貨</span></div><div class="row2"><button class="btn plain" type="button" data-close>繼續下單</button><button class="btn pri" type="button" id="okGo">查看訂單</button></div>`,
     ()=>{$('okGo').onclick=()=>{closeSheet();seg='sub';go('orders')}});
   renderProducts();header();updBadge()}
 
 /* ---------- 訂單 ---------- */
 let adv={};
-function li(l){if(l.custom)return{n:l.custom+'（客訂）',u:l.unit,pr:null};const p=P.find(x=>x.id===l.pid);return{n:p.n,u:p.sp[l.si][0],pr:p.mk?null:p.sp[l.si][1]}}
+function li(l){if(l.custom)return{n:l.custom+'（客訂）',u:l.unit,pr:null,tag:'客訂'};const p=P.find(x=>x.id===l.pid);const sp=p.sp[l.si];return{n:p.n,u:sp.u,pr:p.mk||byWeight(sp)?null:sp.pr,tag:p.mk?'時價':byWeight(sp)?money(sp.pr)+'/'+sp.pu:''}}
 const oAmt=o=>o.amt??(o.st==='can'?0:o.lines.reduce((a,l)=>{const i=li(l);return a+(i.pr?i.pr*l.q:0)},0));
 const canEdit=o=>o.st==='sub'&&(o.date>TODAY()||(o.date===TODAY()&&hm()<60));
 function renderOrders(){document.querySelectorAll('#seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===seg));
@@ -543,7 +584,7 @@ $('olist').addEventListener('click',e=>{if(e.target.closest('#advClr')){adv={};r
   const b=e.target.closest('button');if(!b)return;const o=orders.find(x=>x.no===(b.dataset.open||b.dataset.again||b.dataset.edit||b.dataset.cancel));if(!o)return;
   if(b.dataset.open){const slip=slips.find(s=>s.date===o.date&&s.store===o.store&&o.st==='done');
     sheet(o.no,`<div class="hint">${STORES.find(s=>s.id===o.store).n}・交貨 ${full(o.date)}${wk(o.date)}・訂單日 ${full(o.created)}・${o.src}</div>
-    <div class="tblwrap"><table class="tbl"><tr><th>品名</th><th class="r">訂購量</th><th class="r">單價</th><th class="r">小計</th></tr>${o.lines.map(l=>{const i=li(l);return `<tr><td>${esc(i.n)}</td><td class="r">${l.q} ${esc(i.u)}</td><td class="r">${i.pr?money(i.pr):'時價'}</td><td class="r">${i.pr?money(i.pr*l.q):'—'}</td></tr>`}).join('')}</table></div>
+    <div class="tblwrap"><table class="tbl"><tr><th>品名</th><th class="r">訂購量</th><th class="r">單價</th><th class="r">小計</th></tr>${o.lines.map(l=>{const i=li(l);return `<tr><td>${esc(i.n)}</td><td class="r">${l.q} ${esc(i.u)}</td><td class="r">${i.pr?money(i.pr):i.tag}</td><td class="r">${i.pr?money(i.pr*l.q):'—'}</td></tr>`}).join('')}</table></div>
     ${o.note?`<div class="hint">備註：${esc(o.note)}</div>`:''}${slip?`<button class="btn soft" type="button" id="toSlip">查看出貨明細（實出量、金額）</button>`:''}<button class="btn plain" type="button" data-close>關閉</button>`,
     ()=>{if(slip)$('toSlip').onclick=()=>showSlip(slip)});return}
   if(b.dataset.again){loadCart(o);editing=null;go('shop');setDate(earliest());openCart();toast('已帶入品項，價格依新交貨日重新計算');return}
@@ -597,7 +638,7 @@ const INFO={
  stores:null,
  invite:['邀請好友',`<div style="align-self:center;width:180px;height:180px;background:repeating-conic-gradient(var(--fg) 0 25%,var(--card) 0 50%) 0 0/24px 24px;border:10px solid var(--card);outline:1px solid var(--line)"></div><p style="text-align:center;margin:0">掃描加入採鮮 LINE 官方帳號<br><b>@nvy5669n</b></p><p class="hint">正式版顯示真的 QR Code；新朋友加入後需由採鮮核准才能下單。</p><button class="btn plain" type="button" data-close>關閉</button>`],
  faq:['常見問題',`<p><b>怎麼知道下單成功？</b><br>送出後顯示單號，「通知」也會有一則「訂單已提交」。</p><p><b>可以改單嗎？</b><br>截單前在「訂單 → 已提交」按「修改」。</p><p><b>為什麼是時價？</b><br>價格變動大的商品以出貨明細為準。</p><p><b>為什麼找不到某些商品？</b><br>只顯示該交貨日有供應的商品，可用「加入客訂」。</p>`],
- guide:['操作教學',`<p>1. 右上角日曆選交貨日<br>2. 點商品的橘色購物車，選規格、數量<br>3. 下方綠色列「去結帳」送出<br>4. 「訂單」查進度，「通知」看出貨狀況</p>`],
+ guide:['操作教學',`<p>1. 右上角日曆選交貨日<br>2. 點商品的橘色購物車，選規格、數量（公斤可填小數 1 位，包、盒只能整數）<br>3. 下方綠色列「去結帳」送出<br>4. 「訂單」查進度，「通知」看出貨狀況</p>`],
  notice:['購物須知',`<table class="tbl"><tr><td>下單截止</td><td>交貨日當天凌晨 01:00<br><small class="hint">01:00～04:00 下單會詢問是否順延</small></td></tr><tr><td>配送區域</td><td>沙鹿、梧棲、清水、西屯、太平</td></tr><tr><td>配送時間</td><td>依各路線安排</td></tr><tr><td>公告</td><td>${ANN}</td></tr></table>`],
  contact:['聯絡採鮮',`<p>LINE 官方帳號 @nvy5669n<br>台中市沙鹿區平等路</p>`],
  terms:['使用條款及隱私權政策',`<p class="hint">正式版放條款內容。</p>`],
