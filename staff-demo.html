@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex">
+<title>採鮮員工手機樣品</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+[hidden]{display:none!important}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* 固定淺色。模組配色：首頁深灰藍、點貨海藍、進貨琥珀橘（LINE 下單頁是鮮綠，彼此區隔） */
+/* Layout: 手機 App — 頂部模組色標題列、內容、底部動作列 */
+:root{
+  --bg:#f3f5f7; --card:#ffffff; --fg:#1e2933; --muted:#677482; --line:#e0e5ea;
+  --head:#33424f; --head-fg:#ffffff; --accent:#33424f; --accent-soft:#e6ebf0; --on-accent:#ffffff;
+  --bad:#c7332b; --bad-soft:#fde8e6; --ok:#257a45; --ok-soft:#e2f3e8; --warn:#b5620f; --warn-soft:#fdf0e0;
+  --info:#2c5e89; --info-soft:#e3edf7;
+  --c-根莖:#f5e6d2; --c-葉菜:#e0f1d9; --c-水菜:#d9eff1; --c-瓜果:#edf2d3; --c-其他:#ebe8f5; --c-菇類:#f0e4d9; --c-辛香:#fae1e0; --c-冷凍:#dde9f8;
+  --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+:root[data-mod="count"]{--head:#1d6fb8; --accent:#155a96; --accent-soft:#e3eefa}
+:root[data-mod="buy"]{--head:#d6701a; --accent:#b2570c; --accent-soft:#fdeedd}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--head)}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input,select,textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.in{max-width:640px;margin:0 auto;min-width:0;width:100%}
+.catbar,.vtabs{min-width:0;max-width:100%}
+.demo{background:#fff8d6;color:#6b5600;font-size:12.5px;padding-block:6px}
+.demo .in{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.demo select{width:auto;font-size:12.5px;padding:2px 6px}
+.demo button{border:1px solid #d9c46a;background:#fff;border-radius:6px;padding:1px 8px;font-size:12.5px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;background:var(--head);color:var(--head-fg)}
+.top .bar{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;min-height:58px}
+.top h1{margin:0;text-align:center;font-size:19px;font-weight:700}
+.top h1 small{display:block;font-size:12px;font-weight:400;opacity:.85}
+.hb{width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center}
+main{padding-block:12px 150px;display:flex;flex-direction:column;gap:12px}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:700;text-align:center}
+.btn.pri{background:var(--accent);color:var(--on-accent)}
+.btn.soft{background:var(--accent-soft);color:var(--accent)}
+.btn.plain{background:var(--card);border:1px solid var(--line)}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.sm{padding:6px 12px;font-size:14px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pill{font-size:12px;border-radius:999px;padding:1px 9px;font-weight:700;white-space:nowrap}
+.p-new{background:var(--info-soft);color:var(--info)}
+.p-buy{background:var(--warn-soft);color:var(--warn)}
+.p-done{background:var(--ok-soft);color:var(--ok)}
+.p-bad{background:var(--bad-soft);color:var(--bad)}
+/* 首頁 */
+.who{display:flex;align-items:center;gap:12px}
+.who .av{width:48px;height:48px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{border:0;border-radius:16px;padding:18px 16px;text-align:left;color:#fff;display:flex;flex-direction:column;gap:6px;min-height:140px}
+.tile b{font-size:24px}
+.tile span{font-size:13px;opacity:.92}
+.tile.count{background:#1d6fb8}
+.tile.buy{background:#d6701a}
+.tile.lock{background:#b9c1c9}
+/* 點貨 */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:10px 0;font-size:16px;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.seg button small{font-size:12px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.seg button[aria-pressed="true"] small{color:#dbe8f5}
+.catbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.cb{flex:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;background:var(--card)}
+.cb[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.cat{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.cat h3{margin:0;padding:8px 14px;font-size:15px;display:flex;justify-content:space-between}
+.ci{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:10px 14px;background:var(--card);border-top:1px solid var(--line)}
+.ci .nm{font-size:17px;font-weight:700}
+.ci .meta{font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:11.5px;border-radius:999px;padding:0 7px;font-weight:700}
+.t-must{background:var(--bad-soft);color:var(--bad)}
+.t-freq{background:var(--info-soft);color:var(--info)}
+.t-proc{background:var(--warn-soft);color:var(--warn)}
+.qty{display:flex;align-items:center;gap:6px}
+.qty input{width:84px;text-align:center;font-size:20px;font-weight:700;padding:6px 4px;font-variant-numeric:tabular-nums}
+.qty input.zero{color:var(--bad);border-color:var(--bad)}
+.qty input.miss{border-color:var(--bad);background:var(--bad-soft)}
+.qty .u{font-size:14px;color:var(--muted);min-width:28px}
+.zerotxt{grid-column:1/-1;color:var(--bad);font-weight:700;font-size:13px}
+.ci.done{background:#fbfdff}
+.ci.done .nm::after{content:" ✓";color:var(--ok)}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--card);border-top:1px solid var(--line);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.bottom .in{display:flex;gap:10px;align-items:center}
+.bottom .sum{flex:1;font-size:14px;color:var(--muted)}
+.bottom .sum b{color:var(--fg);font-size:18px;font-variant-numeric:tabular-nums}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th{font-weight:500;color:var(--muted);font-size:12.5px;text-align:left;padding:6px 4px}
+.tbl td{padding:8px 4px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tbl .r{text-align:right}
+.diff-p{color:var(--ok);font-weight:700}
+.diff-n{color:var(--bad);font-weight:700}
+.tblwrap{overflow-x:auto}
+.photo{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.photo img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+/* 進貨 */
+.vtabs{display:flex;gap:6px;overflow-x:auto}
+.vt{flex:none;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:6px 12px;font-size:15px;display:flex;flex-direction:column;align-items:center;line-height:1.25}
+.vt small{font-size:11.5px;color:var(--muted)}
+.vt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.vt[aria-pressed="true"] small{color:#ffe6cc}
+.bi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:12px 14px;background:var(--card);border-top:1px solid var(--line)}
+.bi:first-child{border-top:0}
+.bi .nm{font-size:17px;font-weight:700}
+.bi .nums{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;background:var(--bg);border-radius:8px;padding:6px 4px;font-size:12px;color:var(--muted)}
+.bi .nums b{display:block;font-size:16px;color:var(--fg);font-variant-numeric:tabular-nums}
+.bi .nums .sug b{color:var(--accent)}
+.bi .sub{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px}
+.bi.on{background:#fffaf3}
+.linkb{border:0;background:transparent;color:var(--accent);font-weight:700;padding:2px 0;font-size:13.5px;text-decoration:underline}
+.oc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;text-align:left;width:100%}
+.oc .h{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.oc .t{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.oc .t b{font-size:17px}
+.steps{display:flex;gap:4px;font-size:12px;color:var(--muted);align-items:center;flex-wrap:wrap}
+.steps .on{color:var(--accent);font-weight:700}
+pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;margin:0;font-family:var(--f-body);font-size:14.5px}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.panel{background:var(--card);width:100%;max-width:640px;max-height:92%;overflow:auto;border-radius:16px 16px 0 0;padding-top:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.panel h2{margin:0;font-size:20px}
+.alert{border-radius:10px;padding:10px 12px;font-size:14px}
+.a-bad{background:var(--bad-soft);color:var(--bad)}
+.a-warn{background:var(--warn-soft);color:var(--warn)}
+.a-ok{background:var(--ok-soft);color:var(--ok)}
+.a-info{background:var(--info-soft);color:var(--info)}
+.list{display:flex;flex-direction:column;gap:2px}
+.list button{border:0;border-bottom:1px solid var(--line);background:transparent;padding:10px 4px;text-align:left;font-size:16px;display:flex;justify-content:space-between}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:#1e2933;color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;z-index:40;max-width:90%}
+</style>
+</head>
+<body>
+
+<div class="demo gut"><div class="in">
+  <b>樣品資料</b>
+  <label>登入身分 <select id="user"><option value="順">順（點貨）</option><option value="巃騰">巃騰（點貨）</option><option value="小沾">小沾（點貨）</option><option value="永順" selected>永順（點貨＋進貨＋簽核）</option><option value="土豆">土豆（全部＋看成本）</option></select></label>
+  <button type="button" id="fill">一鍵帶入點貨數字</button>
+</div></div>
+
+<header class="top"><div class="gut"><div class="in bar">
+  <div id="hL"></div><h1 id="hT"></h1><div id="hR"></div>
+</div></div></header>
+
+<!-- 首頁 -->
+<main class="gut" id="v-home"><div class="in" style="display:flex;flex-direction:column;gap:14px">
+  <div class="card who"><div class="av" id="av"></div><div><b id="uName" style="font-size:18px"></b><div class="hint" id="uPerm"></div></div></div>
+  <div class="tiles">
+    <button class="tile count" type="button" data-go="count"><svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M9 4h6l1 2h3v14H5V6h3z"/><path d="M9 12l2 2 4-4"/></svg><b>點貨</b><span id="tCount"></span></button>
+    <button class="tile buy" type="button" data-go="buy" id="tileBuy"><svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M2.5 6h11v10h-11z"/><path d="M13.5 9.5h4l3 3.5v3h-7"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg><b>進貨</b><span id="tBuy"></span></button>
+  </div>
+  <div class="card"><b>今天</b><div id="todayInfo" class="hint" style="margin-top:4px"></div></div>
+</div></main>
+
+<!-- 點貨 -->
+<main class="gut" id="v-count" hidden><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="seg" id="locSeg"></div>
+  <div class="catbar" id="catBar"></div>
+  <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="showAll" style="width:auto"> 顯示今天不用點的品項</label>
+  <div id="cList" style="display:flex;flex-direction:column;gap:10px"></div>
+  <div class="card"><b>備註與照片</b><p class="hint">清單外的品項、手寫紀錄可以拍照上傳</p>
+    <textarea id="cNote" rows="2" placeholder="例：後門有 2 箱客人退回的小黃瓜" style="margin-top:6px"></textarea>
+    <div class="photo" style="margin-top:8px"><label class="btn soft sm" style="cursor:pointer">📷 拍照／選照片<input type="file" accept="image/*" id="cPhoto" hidden multiple></label><span id="cPhotos" class="photo"></span></div>
+  </div>
+</div></main>
+
+<!-- 點貨結果 -->
+<main class="gut" id="v-countdone" hidden><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="alert a-ok" id="cdHead"></div>
+  <div class="card"><b>差異比對</b><p class="hint">帳面＝上次點貨＋之後進貨－出貨－加工領料。差異只列出來，不會自動調整，下次以點貨數為準。</p>
+    <div class="tblwrap"><table class="tbl" id="diffTbl"></table></div></div>
+  <div class="card" id="cdZero"></div>
+  <button class="btn pri" type="button" data-go="home">回首頁</button>
+</div></main>
+
+<!-- 進貨列表 -->
+<main class="gut" id="v-buy" hidden><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="alert a-info" id="buyCountInfo"></div>
+  <button class="btn pri" type="button" id="newPO">＋ 新增進貨單（依建議量）</button>
+  <div id="poList" style="display:flex;flex-direction:column;gap:10px"></div>
+</div></main>
+
+<!-- 進貨單編輯 -->
+<main class="gut" id="v-po" hidden><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="steps" id="poSteps"></div>
+  <div class="vtabs" id="vTabs"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span class="hint" id="vHint"></span><button class="btn soft sm" type="button" id="useSug">全部帶入建議量</button></div>
+  <div class="card" style="padding:0;overflow:hidden" id="poItems"></div>
+  <button class="btn plain" type="button" id="addItem">＋ 臨時加品項</button>
+</div></main>
+
+<!-- 到貨核對 -->
+<main class="gut" id="v-recv" hidden><div class="in" style="display:flex;flex-direction:column;gap:10px">
+  <div class="alert a-warn">逐項核對實收量。實收比叫的少，要選短收原因。</div>
+  <div class="vtabs" id="rTabs"></div>
+  <div class="card" style="padding:0;overflow:hidden" id="rItems"></div>
+  <div class="card"><b>廠商單據照片</b><div class="photo" style="margin-top:8px"><label class="btn soft sm" style="cursor:pointer">📷 拍單據<input type="file" accept="image/*" id="rPhoto" hidden multiple></label><span id="rPhotos" class="photo"></span></div></div>
+</div></main>
+
+<div class="bottom gut" id="bottom" hidden><div class="in"><div class="sum" id="bSum"></div><div id="bBtns" style="display:flex;gap:8px"></div></div></div>
+
+<div class="sheet" id="sh" hidden><div class="panel" role="dialog" aria-modal="true" aria-labelledby="shT"><h2 id="shT"></h2><div id="shB" style="display:flex;flex-direction:column;gap:12px"></div></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- 樣品資料 ---------- */
+const CATS=['根莖','葉菜','水菜','瓜果','其他','菇類','辛香','冷凍'];
+const VENDORS=['西螺','阿凱','大北園','惠鮮','霧峰菇','丸郎'];
+// freq: 'd' 每天, 'alt' 隔天, [週幾] ; locs 有放的地點 ; book 帳面 ; price 最近進價（看成本權限才顯示）
+const IT=[
+ {id:1,n:'高麗菜原封',sp:'30KG',cat:'葉菜',u:'件',v:'西螺',safe:12,book:{倉:8,市:2},must:1,freq:'d',price:520,locs:['倉','市']},
+ {id:2,n:'高麗菜原封',sp:'20KG',cat:'葉菜',u:'件',v:'西螺',safe:6,book:{倉:4,市:1},freq:'d',price:360,locs:['倉','市']},
+ {id:3,n:'大白菜',sp:'件',cat:'葉菜',u:'件',v:'西螺',safe:5,book:{倉:3},freq:'d',price:300,locs:['倉']},
+ {id:4,n:'小白菜',sp:'公斤',cat:'葉菜',u:'公斤',v:'阿凱',safe:15,book:{倉:6,市:2},freq:'d',price:32,locs:['倉','市']},
+ {id:5,n:'青江菜',sp:'公斤',cat:'葉菜',u:'公斤',v:'大北園',safe:10,book:{倉:4},freq:'d',price:30,locs:['倉']},
+ {id:6,n:'空心菜',sp:'公斤',cat:'水菜',u:'公斤',v:'惠鮮',safe:12,book:{倉:5,市:1},freq:'d',price:35,locs:['倉','市']},
+ {id:7,n:'地瓜葉',sp:'公斤',cat:'水菜',u:'公斤',v:'惠鮮',safe:8,book:{倉:3},freq:'d',price:28,locs:['倉']},
+ {id:8,n:'洋蔥',sp:'20KG 袋',cat:'根莖',u:'袋',v:'西螺',safe:6,book:{倉:4,市:1},must:1,freq:'d',price:480,locs:['倉','市']},
+ {id:9,n:'紅蘿蔔',sp:'箱',cat:'根莖',u:'箱',v:'西螺',safe:4,book:{倉:2,市:1},freq:'d',price:420,locs:['倉','市']},
+ {id:10,n:'馬鈴薯',sp:'箱',cat:'根莖',u:'箱',v:'西螺',safe:3,book:{倉:2},freq:'alt',price:560,locs:['倉']},
+ {id:11,n:'小黃瓜',sp:'箱',cat:'瓜果',u:'箱',v:'西螺',safe:3,book:{倉:1,市:1},freq:'d',price:650,locs:['倉','市']},
+ {id:12,n:'牛番茄',sp:'箱',cat:'瓜果',u:'箱',v:'西螺',safe:2,book:{倉:1},freq:'alt',price:700,locs:['倉']},
+ {id:13,n:'杏鮑菇',sp:'3KG 箱',cat:'菇類',u:'箱',v:'霧峰菇',safe:4,book:{倉:2},freq:'d',price:330,locs:['倉']},
+ {id:14,n:'金針菇',sp:'包',cat:'菇類',u:'包',v:'霧峰菇',safe:30,book:{倉:18,市:6},freq:'d',price:11,locs:['倉','市']},
+ {id:15,n:'鴻喜菇',sp:'包',cat:'菇類',u:'包',v:'霧峰菇',safe:20,book:{倉:9},freq:'d',price:18,locs:['倉']},
+ {id:16,n:'青蔥',sp:'公斤',cat:'辛香',u:'公斤',v:'西螺',safe:8,book:{倉:3,市:1},must:1,freq:'d',price:95,locs:['倉','市']},
+ {id:17,n:'蒜頭',sp:'公斤',cat:'辛香',u:'公斤',v:'丸郎',safe:10,book:{倉:7},freq:'d',price:120,locs:['倉']},
+ {id:18,n:'老薑',sp:'公斤',cat:'辛香',u:'公斤',v:'西螺',safe:6,book:{倉:4},freq:'d',price:75,locs:['倉']},
+ {id:19,n:'薑絲',sp:'公斤',cat:'其他',u:'公斤',v:null,proc:1,safe:3,book:{倉:1.5},freq:'d',locs:['倉']},
+ {id:20,n:'紅蘿蔔絲',sp:'公斤',cat:'其他',u:'公斤',v:null,proc:1,safe:4,book:{倉:2},freq:'d',locs:['倉']},
+ {id:21,n:'冷凍秋葵',sp:'包',cat:'冷凍',u:'包',v:'丸郎',safe:20,book:{倉:12},freq:[2,5],price:48,locs:['倉']},
+ {id:22,n:'冷凍玉米粒',sp:'包',cat:'冷凍',u:'包',v:'丸郎',safe:15,book:{倉:10},freq:[2,5],price:42,locs:['倉']}
+];
+const USERS={順:{count:1},巃騰:{count:1},小沾:{count:1},永順:{count:1,buy:1,sign:1},土豆:{count:1,buy:1,sign:1,cost:1}};
+const SHORT=['廠商缺貨','品質不良退回','數量算錯','改用替代品項','其他'];
+const WD='日一二三四五六';
+
+/* ---------- 工具 ---------- */
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const now=new Date();const TODAY=`${now.getMonth()+1}/${now.getDate()}（${WD[now.getDay()]}）`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Math.round(n*10)/10;
+const money=n=>'$'+Math.round(n).toLocaleString();
+function toast(t){$('toast').textContent=t;$('toast').hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').hidden=true,2400)}
+function sheet(t,h,after){$('shT').textContent=t;$('shB').innerHTML=h;$('sh').hidden=false;after&&after()}
+function closeSheet(){$('sh').hidden=true}
+$('sh').addEventListener('click',e=>{if(e.target.id==='sh'||e.target.closest('[data-close]'))closeSheet()});
+const user=()=>$('user').value;const can=k=>!!USERS[user()][k];
+const fullName=i=>i.n+(i.sp&&i.sp!==i.u?' '+i.sp:'');
+function due(i){if(i.freq==='d')return true;if(i.freq==='alt')return now.getDate()%2===1;return i.freq.includes(now.getDay())}
+const freqTxt=i=>i.freq==='d'?'':i.freq==='alt'?'隔天點':'每週'+i.freq.map(d=>WD[d]).join('、')+'點';
+
+/* ---------- 狀態 ---------- */
+let loc='倉',cat='全部';
+const counts={倉:{},市:{}};          // 本次點貨輸入
+const submitted={倉:null,市:null};  // 已送出的點貨 {by,time,data}
+let photosC=[],photosR=[];
+let pos=[{no:'PD20261102-01',date:'11/2（一）',by:'永順',st:'signed',recv:true,lines:[{id:1,q:6,got:6},{id:8,q:3,got:3},{id:16,q:6,got:5,why:'廠商缺貨'}]}];
+let curPO=null,vtab='西螺';
+
+/* ---------- 頂部列 ---------- */
+const TITLE={home:['採鮮員工','home'],count:['點貨','count'],countdone:['點貨完成','count'],buy:['進貨','buy'],po:['進貨單','buy'],recv:['到貨核對','buy']};
+let view='home';
+function header(){const[t,mod]=TITLE[view];document.documentElement.dataset.mod=mod;
+  $('hT').innerHTML=t+(view==='count'?`<small>${TODAY}・${user()}</small>`:view==='po'&&curPO?`<small>${curPO.no}</small>`:view==='home'?`<small>${TODAY}</small>`:'');
+  $('hL').innerHTML=view==='home'?'':`<button class="hb" type="button" id="back" aria-label="返回"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>`;
+  $('hR').innerHTML=view==='count'?`<button class="hb" type="button" id="hist" aria-label="點貨紀錄"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></button>`:''}
+$('hL').addEventListener('click',e=>{if(!e.target.closest('#back'))return;go({count:'home',countdone:'home',buy:'home',po:'buy',recv:'buy'}[view])});
+$('hR').addEventListener('click',e=>{if(e.target.closest('#hist'))history()});
+function go(v){view=v;['home','count','countdone','buy','po','recv'].forEach(k=>$('v-'+k).hidden=k!==v);header();
+  ({home:renderHome,count:renderCount,countdone:()=>{},buy:renderBuy,po:renderPO,recv:renderRecv})[v]();window.scrollTo(0,0)}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(!g)return;
+  if(g.dataset.go==='buy'&&!can('buy')){toast(user()+' 沒有進貨權限');return}go(g.dataset.go)});
+$('user').addEventListener('change',()=>{go(view==='po'||view==='recv'||view==='buy'?(can('buy')?view:'home'):view)});
+
+/* ---------- 首頁 ---------- */
+function renderHome(){const u=user();$('av').textContent=u[0];$('uName').textContent=u;
+  $('uPerm').textContent=['點貨',can('buy')&&'進貨',can('sign')&&'簽核',can('cost')&&'看成本'].filter(Boolean).join('・');
+  $('tileBuy').className='tile '+(can('buy')?'buy':'lock');
+  const st=l=>submitted[l]?`已點（${submitted[l].by} ${submitted[l].time}）`:'未點';
+  $('tCount').innerHTML=`倉庫：${st('倉')}<br>市場：${st('市')}`;
+  const open=pos.filter(p=>p.st!=='signed').length;
+  $('tBuy').innerHTML=can('buy')?`進行中 ${open} 張`:'沒有權限';
+  $('todayInfo').innerHTML=`今天要點：${IT.filter(due).length} 項（含冷凍類 ${IT.filter(i=>i.cat==='冷凍'&&due(i)).length} 項）<br>必點：${IT.filter(i=>i.must).map(fullName).join('、')}`}
+
+/* ---------- 點貨 ---------- */
+function itemsAt(l){return IT.filter(i=>i.locs.includes(l))}
+function renderCount(){
+  $('locSeg').innerHTML=['倉','市'].map(l=>{const L=itemsAt(l).filter(due);const n=L.filter(i=>counts[l][i.id]!==undefined).length;
+    return `<button type="button" data-l="${l}" aria-pressed="${l===loc}">${l==='倉'?'倉庫':'市場'}<small>${submitted[l]?'已送出':`已點 ${n}/${L.length}`}</small></button>`}).join('');
+  $('catBar').innerHTML=['全部',...CATS].map(c=>`<button class="cb" type="button" data-c="${c}" aria-pressed="${c===cat}">${c}</button>`).join('');
+  const all=$('showAll').checked;
+  const L=itemsAt(loc).filter(i=>(all||due(i))&&(cat==='全部'||i.cat===cat));
+  $('cList').innerHTML=CATS.filter(c=>L.some(i=>i.cat===c)).map(c=>{const g=L.filter(i=>i.cat===c);const n=g.filter(i=>counts[loc][i.id]!==undefined).length;
+    return `<section class="cat"><h3 style="background:var(--c-${c})">${c}<span class="hint">${n}/${g.length}</span></h3>${g.map(i=>{const v=counts[loc][i.id];const has=v!==undefined;
+      return `<div class="ci${has?' done':''}" data-id="${i.id}">
+        <div><div class="nm">${esc(fullName(i))}</div><div class="meta">${i.must?'<i class="tag t-must">必點</i>':''}${freqTxt(i)?`<i class="tag t-freq">${freqTxt(i)}</i>`:''}${i.proc?'<i class="tag t-proc">加工常備</i>':''}${!due(i)?'<span>今天不用點</span>':''}</div></div>
+        <div class="qty"><input inputmode="decimal" data-q value="${has?v:''}" class="${has&&+v===0?'zero':''}" aria-label="${esc(fullName(i))}數量" placeholder="—"><span class="u">${i.u}</span></div>
+        ${has&&+v===0?'<div class="zerotxt">無庫存</div>':''}</div>`}).join('')}</section>`}).join('')||'<div class="card hint">這個分類今天沒有要點的品項</div>';
+  const D=itemsAt(loc).filter(due);const n=D.filter(i=>counts[loc][i.id]!==undefined).length;
+  $('bottom').hidden=false;$('bSum').innerHTML=`${loc==='倉'?'倉庫':'市場'} 已點 <b>${n}</b> / ${D.length}`;
+  $('bBtns').innerHTML=`<button class="btn pri" type="button" id="cSubmit">送出${loc==='倉'?'倉庫':'市場'}點貨</button>`}
+$('locSeg').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b)return;loc=b.dataset.l;renderCount()});
+$('catBar').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;cat=b.dataset.c;renderCount()});
+$('showAll').addEventListener('change',renderCount);
+$('cList').addEventListener('change',e=>{if(!e.target.matches('[data-q]'))return;const id=+e.target.closest('.ci').dataset.id;const raw=e.target.value.trim();
+  if(raw===''){delete counts[loc][id]}else{const v=parseFloat(raw);if(isNaN(v)||v<0){toast('請填 0 或正數');e.target.value='';delete counts[loc][id]}else{const i=IT.find(x=>x.id===id);counts[loc][id]=i.u==='公斤'?fmt(v):Math.round(v);if(i.u!=='公斤'&&v!==Math.round(v))toast(i.u+'只能填整數，已調整')}}
+  const y=window.scrollY;renderCount();window.scrollTo(0,y)});
+$('cList').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('[data-q]')){e.preventDefault();const ins=[...document.querySelectorAll('#cList [data-q]')];const k=ins.indexOf(e.target);e.target.blur();if(ins[k+1])setTimeout(()=>document.querySelectorAll('#cList [data-q]')[k+1]?.focus(),0)}});
+$('cPhoto').addEventListener('change',e=>{[...e.target.files].forEach(f=>photosC.push(URL.createObjectURL(f)));$('cPhotos').innerHTML=photosC.map(u=>`<img src="${u}" alt="點貨照片">`).join('')});
+$('bottom').addEventListener('click',e=>{
+  if(e.target.closest('#cSubmit'))submitCount();
+  if(e.target.closest('#poSave'))savePO('new');if(e.target.closest('#poSend'))sendPO();
+  if(e.target.closest('#rDone'))finishRecv();if(e.target.closest('#poSign'))signPO()});
+function submitCount(){const D=itemsAt(loc).filter(due);const miss=D.filter(i=>counts[loc][i.id]===undefined);
+  const mustMiss=miss.filter(i=>i.must);
+  if(mustMiss.length)return sheet('必點品項還沒點',`<div class="alert a-bad">${mustMiss.map(i=>'<b>'+esc(fullName(i))+'</b>').join('、')} 是必點，要填數字才能送出（沒有就填 0）。</div><button class="btn pri" type="button" data-close>回去點</button>`,
+    ()=>{document.querySelectorAll('#cList .ci').forEach(r=>{if(mustMiss.some(i=>i.id==r.dataset.id))r.querySelector('[data-q]').classList.add('miss')})});
+  if(miss.length)return sheet('還有品項沒點',`<div class="alert a-warn">還有 ${miss.length} 項沒填：${miss.map(i=>esc(fullName(i))).join('、')}</div><p class="hint">沒填的品項這次不算，帳面維持原數字。</p><div class="row2"><button class="btn plain" type="button" data-close>回去點</button><button class="btn pri" type="button" id="goSub">先送出</button></div>`,
+    ()=>{$('goSub').onclick=()=>{closeSheet();doSubmit()}});
+  doSubmit()}
+function doSubmit(){const t=`${pad(now.getHours())}:${pad(now.getMinutes())}`;submitted[loc]={by:user(),time:t,data:{...counts[loc]}};
+  const rows=itemsAt(loc).filter(i=>counts[loc][i.id]!==undefined).map(i=>{const b=i.book[loc]||0,c=counts[loc][i.id];return{i,b,c,d:fmt(c-b)}});
+  const diff=rows.filter(r=>r.d!==0);
+  $('cdHead').innerHTML=`<b>${loc==='倉'?'倉庫':'市場'}點貨已送出</b>（${user()} ${t}）<br>差異 ${diff.length} 項，已通知土豆。`;
+  $('diffTbl').innerHTML=`<tr><th>品項</th><th class="r">帳面</th><th class="r">點貨</th><th class="r">差異</th></tr>`+
+    (diff.length?diff.map(r=>`<tr><td>${esc(fullName(r.i))}</td><td class="r">${r.b} ${r.i.u}</td><td class="r">${r.c} ${r.i.u}</td><td class="r ${r.d>0?'diff-p':'diff-n'}">${r.d>0?'+':''}${r.d}</td></tr>`).join(''):'<tr><td colspan="4">全部相符</td></tr>');
+  const z=rows.filter(r=>r.c===0);$('cdZero').innerHTML=z.length?`<b style="color:var(--bad)">無庫存 ${z.length} 項</b><p class="hint" style="margin-top:4px">${z.map(r=>esc(fullName(r.i))).join('、')}</p>`:'<b>沒有無庫存的品項</b>';
+  const other=loc==='倉'?'市':'倉';$('cdZero').innerHTML+=submitted[other]?'':`<p class="hint" style="margin-top:8px">${other==='倉'?'倉庫':'市場'}還沒點。</p>`;
+  $('bottom').hidden=true;go('countdone')}
+function history(){const H=['倉','市'].filter(l=>submitted[l]).map(l=>`<button type="button"><span>今天 ${l==='倉'?'倉庫':'市場'}</span><span class="hint">${submitted[l].by} ${submitted[l].time}</span></button>`).join('');
+  sheet('點貨紀錄',`<div class="list">${H}<button type="button"><span>11/2（一）倉庫</span><span class="hint">巃騰 12:40</span></button><button type="button"><span>11/2（一）市場</span><span class="hint">小沾 12:55</span></button><button type="button"><span>11/1（日）倉庫</span><span class="hint">順 13:05</span></button></div><button class="btn plain" type="button" data-close>關閉</button>`)}
+$('fill').addEventListener('click',()=>{['倉','市'].forEach(l=>itemsAt(l).filter(due).forEach(i=>{const b=i.book[l]||0;const r=[0,0,-1,1,0,-0.5][i.id%6];counts[l][i.id]=i.id===13?0:Math.max(0,i.u==='公斤'?fmt(b+r):Math.round(b+r))}));
+  if(view==='count')renderCount();toast('已帶入樣品點貨數字（杏鮑菇＝0）')});
+
+/* ---------- 進貨 ---------- */
+// 現有庫存：今天有點就用點貨數，沒點就不給建議
+function stockOf(i){if(!submitted.倉&&!submitted.市)return null;let s=0;i.locs.forEach(l=>{const c=submitted[l]?.data[i.id];s+=c!==undefined?c:(i.book[l]||0)});return fmt(s)}
+const sugOf=i=>{const s=stockOf(i);return s===null?null:Math.max(0,Math.ceil(i.safe-s))};
+function renderBuy(){$('bottom').hidden=true;
+  const st=['倉','市'].map(l=>`${l==='倉'?'倉庫':'市場'}${submitted[l]?'已點（'+submitted[l].time+'）':'未點'}`).join('・');
+  $('buyCountInfo').innerHTML=`今天點貨：${st}${!submitted.倉&&!submitted.市?'<br>還沒點貨也可以開進貨單，只是不會有建議量。':''}`;
+  const S={new:['新增','p-new'],buy:['進貨','p-buy'],signed:['已簽核','p-done']};
+  $('poList').innerHTML=pos.map((p,k)=>{const vs=[...new Set(p.lines.map(l=>vOf(l)))];return `<button class="oc" type="button" data-po="${k}">
+    <div class="h"><span>${p.no}</span><span>${p.date}・${p.by}</span></div>
+    <div class="t"><b>${vs.join('、')}</b><span class="pill ${S[p.st][1]}">${S[p.st][0]}</span>${p.st==='buy'?`<span class="pill ${p.recv?'p-done':'p-bad'}">${p.recv?'已到貨核對':'待到貨'}</span>`:''}</div>
+    <div class="hint">${p.lines.length} 項${p.lines.some(l=>l.got!==undefined&&l.got<l.q)?'・有短收':''}</div></button>`}).join('')}
+const vOf=l=>l.v||IT.find(i=>i.id===l.id)?.v||'其他';
+$('newPO').addEventListener('click',()=>{const n=pos.filter(p=>p.date===TODAY).length+1;
+  curPO={no:`PD${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(n)}`,date:TODAY,by:user(),st:'new',lines:[]};
+  IT.filter(i=>i.v).forEach(i=>{const s=sugOf(i);if(s)curPO.lines.push({id:i.id,q:s,sug:s})});
+  pos.unshift(curPO);vtab=VENDORS.find(v=>curPO.lines.some(l=>vOf(l)===v))||'西螺';go('po');
+  toast(curPO.lines.length?`已帶入 ${curPO.lines.length} 項建議量，可再調整`:'今天還沒點貨，請自行填數量')});
+$('poList').addEventListener('click',e=>{const b=e.target.closest('[data-po]');if(!b)return;curPO=pos[+b.dataset.po];vtab=vOf(curPO.lines[0]||{});
+  go(curPO.st==='buy'?'recv':'po')});
+function poLine(id){return curPO.lines.find(l=>l.id===id)}
+function renderPO(){const ro=curPO.st!=='new';
+  $('poSteps').innerHTML=['新增','進貨','簽核'].map((s,k)=>`<span class="${['new','buy','signed'][k]===curPO.st?'on':''}">${k?'→ ':''}${s}</span>`).join(' ')+(ro?'<span>（唯讀）</span>':'');
+  $('vTabs').innerHTML=VENDORS.map(v=>{const n=curPO.lines.filter(l=>vOf(l)===v&&l.q>0).length;return `<button class="vt" type="button" data-v="${v}" aria-pressed="${v===vtab}">${v}<small>${n?n+' 項':'—'}</small></button>`}).join('');
+  const L=IT.filter(i=>i.v===vtab&&(!ro||poLine(i.id)));const extra=curPO.lines.filter(l=>!IT.some(i=>i.id===l.id)&&vOf(l)===vtab);
+  $('vHint').textContent=`${vtab}：${L.length} 個品項`;$('useSug').hidden=ro;$('addItem').hidden=ro;
+  $('poItems').innerHTML=L.map(i=>{const l=poLine(i.id);const s=stockOf(i),g=sugOf(i);const q=l?l.q:'';
+    return `<div class="bi${l&&l.q>0?' on':''}" data-id="${i.id}"><div class="nm">${esc(fullName(i))}${l&&l.sub?`<br><span class="hint">替代：${esc(l.sub)}</span>`:''}</div>
+      <div class="qty"><input inputmode="${i.u==='公斤'?'decimal':'numeric'}" data-pq value="${q}" placeholder="0" ${ro?'disabled':''} aria-label="${esc(fullName(i))}進貨量"><span class="u">${i.u}</span></div>
+      <div class="nums"><span>現有<b>${s===null?'未點':s}</b></span><span>安全<b>${i.safe}</b></span><span class="sug">建議<b>${g===null?'—':g}</b></span></div>
+      ${ro?'':`<div class="sub">${g!==null&&q!==g?`<button class="linkb" type="button" data-sug>用建議量 ${g}</button>`:''}<button class="linkb" type="button" data-alt>替代品項</button>${can('cost')&&i.price?`<span class="hint">最近進價 ${money(i.price)}/${i.u}</span>`:''}</div>`}</div>`}).join('')+
+    extra.map(l=>`<div class="bi on"><div class="nm">${esc(l.name)}<br><span class="hint">臨時加的品項</span></div><div class="qty"><input value="${l.q}" disabled><span class="u">${esc(l.u)}</span></div></div>`).join('')
+    ||'<div class="bi hint">這家廠商沒有品項</div>';
+  const n=curPO.lines.filter(l=>l.q>0).length;$('bottom').hidden=false;
+  $('bSum').innerHTML=`共 <b>${n}</b> 項・${[...new Set(curPO.lines.filter(l=>l.q>0).map(vOf))].length} 家廠商`;
+  $('bBtns').innerHTML=ro?(curPO.st==='buy'?'<button class="btn pri" type="button" data-go="recv">到貨核對</button>':`<button class="btn plain" type="button" id="lineTxt">LINE 文字</button>`):
+    `<button class="btn plain" type="button" id="poSave">暫存</button><button class="btn pri" type="button" id="poSend" ${n?'':'disabled'}>送出進貨</button>`;
+  const lt=document.getElementById('lineTxt');if(lt)lt.onclick=()=>showLineText()}
+$('vTabs').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;vtab=b.dataset.v;renderPO()});
+$('poItems').addEventListener('change',e=>{if(!e.target.matches('[data-pq]'))return;const id=+e.target.closest('.bi').dataset.id;const i=IT.find(x=>x.id===id);
+  let v=parseFloat(e.target.value);if(isNaN(v)||v<0)v=0;v=i.u==='公斤'?fmt(v):Math.round(v);
+  const l=poLine(id);if(l)l.q=v;else if(v>0)curPO.lines.push({id,q:v,sug:sugOf(i)});renderPO()});
+$('poItems').addEventListener('click',e=>{const row=e.target.closest('.bi');if(!row||!row.dataset.id)return;const id=+row.dataset.id;const i=IT.find(x=>x.id===id);
+  if(e.target.closest('[data-sug]')){const g=sugOf(i);const l=poLine(id);if(l)l.q=g;else curPO.lines.push({id,q:g,sug:g});renderPO();return}
+  if(e.target.closest('[data-alt]')){const opts=IT.filter(x=>x.cat===i.cat&&x.id!==id);
+    sheet('替代品項：'+fullName(i),`<p class="hint">${esc(fullName(i))} 缺貨時改叫：</p><div class="list">${opts.map(o=>`<button type="button" data-o="${o.id}"><span>${esc(fullName(o))}</span><span class="hint">${o.v||''}</span></button>`).join('')}</div><input id="altFree" placeholder="或自己輸入替代品名"><div class="row2"><button class="btn plain" type="button" data-close>取消</button><button class="btn pri" type="button" id="altOk">確定</button></div>`,
+      ()=>{let pick='';$('shB').querySelector('.list').onclick=ev=>{const b=ev.target.closest('[data-o]');if(!b)return;pick=fullName(IT.find(x=>x.id==b.dataset.o));$('altFree').value=pick};
+        $('altOk').onclick=()=>{const s=$('altFree').value.trim();if(!s)return;let l=poLine(id);if(!l){l={id,q:sugOf(i)||1};curPO.lines.push(l)}l.sub=s;closeSheet();renderPO();toast('已記下替代品項：'+s)}})}});
+$('useSug').addEventListener('click',()=>{let n=0;IT.filter(i=>i.v===vtab).forEach(i=>{const g=sugOf(i);if(g===null)return;const l=poLine(i.id);if(l)l.q=g;else if(g)curPO.lines.push({id:i.id,q:g,sug:g});n++});
+  renderPO();toast(n?`${vtab} 已帶入建議量`:'今天還沒點貨，沒有建議量')});
+$('addItem').addEventListener('click',()=>sheet('臨時加品項',`<input id="aiQ" type="search" placeholder="搜尋品項"><div class="list" id="aiList"></div>
+  <details><summary class="hint">清單沒有？自己輸入</summary><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><input id="aiN" placeholder="品名"><div class="row2"><input id="aiQty" inputmode="decimal" placeholder="數量"><input id="aiU" placeholder="單位" value="件"></div><select id="aiV">${VENDORS.map(v=>`<option${v===vtab?' selected':''}>${v}</option>`).join('')}<option>其他</option></select><button class="btn pri" type="button" id="aiAdd">加入</button></div></details>`,
+  ()=>{const draw=()=>{const q=$('aiQ').value.trim();$('aiList').innerHTML=IT.filter(i=>i.v&&(!q||i.n.includes(q))).map(i=>`<button type="button" data-i="${i.id}"><span>${esc(fullName(i))}</span><span class="hint">${i.v}</span></button>`).join('')};draw();
+    $('aiQ').oninput=draw;$('aiList').onclick=e=>{const b=e.target.closest('[data-i]');if(!b)return;const i=IT.find(x=>x.id==b.dataset.i);vtab=i.v;if(!poLine(i.id))curPO.lines.push({id:i.id,q:1});closeSheet();renderPO();toast('已加入 '+fullName(i)+'，請填數量')};
+    $('aiAdd').onclick=()=>{const n=$('aiN').value.trim(),q=parseFloat($('aiQty').value);if(!n||!(q>0))return;curPO.lines.push({id:'x'+Date.now(),name:n,q,u:$('aiU').value||'件',v:$('aiV').value});vtab=$('aiV').value;closeSheet();renderPO();toast('已加入 '+n)}}));
+function savePO(){toast('已暫存（新增）');go('buy')}
+function lineText(v){const L=curPO.lines.filter(l=>vOf(l)===v&&l.q>0);return `【採鮮進貨】${curPO.date}\n`+L.map(l=>{const i=IT.find(x=>x.id===l.id);return i?`${fullName(i)}　${l.q} ${i.u}${l.sub?`（缺貨可換：${l.sub}）`:''}`:`${l.name}　${l.q} ${l.u}`}).join('\n')+'\n謝謝！'}
+function showLineText(){const vs=[...new Set(curPO.lines.filter(l=>l.q>0).map(vOf))];
+  sheet('給廠商的 LINE 文字',vs.map((v,k)=>`<div><b>${v}</b><pre id="lt${k}">${esc(lineText(v))}</pre><button class="btn soft sm" type="button" data-copy="${k}" style="margin-top:6px">複製 ${v}</button></div>`).join('')+'<button class="btn plain" type="button" data-close>關閉</button>',
+  ()=>{$('shB').onclick=async e=>{const b=e.target.closest('[data-copy]');if(!b)return;const t=$('lt'+b.dataset.copy).textContent;
+    try{await navigator.clipboard.writeText(t);b.textContent='已複製 ✓'}catch(err){const r=document.createRange();r.selectNodeContents($('lt'+b.dataset.copy));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='已選取，請長按複製'}}})}
+function sendPO(){const zero=curPO.lines.filter(l=>!(l.q>0));curPO.lines=curPO.lines.filter(l=>l.q>0);curPO.st='buy';curPO.recv=false;
+  renderPO();showLineText();toast('進貨單已送出，狀態：進貨')}
+
+/* ---------- 到貨核對 ---------- */
+let rtab='';
+function renderRecv(){const vs=[...new Set(curPO.lines.map(vOf))];if(!vs.includes(rtab))rtab=vs[0];
+  $('rTabs').innerHTML=vs.map(v=>{const L=curPO.lines.filter(l=>vOf(l)===v);const ok=L.every(l=>l.got!==undefined);return `<button class="vt" type="button" data-v="${v}" aria-pressed="${v===rtab}">${v}<small>${ok?'已核對':'待核對'}</small></button>`}).join('');
+  const L=curPO.lines.filter(l=>vOf(l)===rtab);const ro=curPO.st==='signed';
+  $('rItems').innerHTML=L.map((l,k)=>{const i=IT.find(x=>x.id===l.id);const nm=i?fullName(i):l.name,u=i?i.u:l.u;const got=l.got;const short=got!==undefined&&got<l.q;
+    return `<div class="bi${got!==undefined?' on':''}" data-k="${curPO.lines.indexOf(l)}"><div class="nm">${esc(nm)}<br><span class="hint">叫 ${l.q} ${esc(u)}${l.sub?'・可換 '+esc(l.sub):''}</span></div>
+      <div class="qty"><input inputmode="${u==='公斤'?'decimal':'numeric'}" data-g value="${got??''}" placeholder="${l.q}" ${ro?'disabled':''} aria-label="${esc(nm)}實收"><span class="u">${esc(u)}</span></div>
+      ${ro?'':`<div class="sub"><button class="linkb" type="button" data-same>實收＝${l.q}</button></div>`}
+      ${short?`<div class="sub" style="grid-column:1/-1"><span style="color:var(--bad);font-weight:700">短收 ${fmt(l.q-got)} ${esc(u)}</span><select data-why style="width:auto" ${ro?'disabled':''}><option value="">選原因</option>${SHORT.map(s=>`<option${l.why===s?' selected':''}>${s}</option>`).join('')}</select></div>`:''}</div>`}).join('');
+  const all=curPO.lines.every(l=>l.got!==undefined);const needWhy=curPO.lines.filter(l=>l.got<l.q&&!l.why).length;
+  $('bottom').hidden=false;$('bSum').innerHTML=`已核對 <b>${curPO.lines.filter(l=>l.got!==undefined).length}</b> / ${curPO.lines.length}${needWhy?`<br><span style="color:var(--bad)">${needWhy} 項短收沒選原因</span>`:''}`;
+  $('bBtns').innerHTML=ro?'<span class="pill p-done">已簽核</span>':curPO.recv?(can('sign')?`<button class="btn ok" type="button" id="poSign">簽核</button>`:'<span class="hint">等永順或土豆簽核</span>'):`<button class="btn pri" type="button" id="rDone" ${all&&!needWhy?'':'disabled'}>完成核對</button>`}
+$('rTabs').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;rtab=b.dataset.v;renderRecv()});
+$('rItems').addEventListener('click',e=>{const row=e.target.closest('.bi');if(!row||!e.target.closest('[data-same]'))return;const l=curPO.lines[+row.dataset.k];l.got=l.q;delete l.why;renderRecv()});
+$('rItems').addEventListener('change',e=>{const row=e.target.closest('.bi');if(!row)return;const l=curPO.lines[+row.dataset.k];
+  if(e.target.matches('[data-g]')){const v=parseFloat(e.target.value);l.got=isNaN(v)||v<0?undefined:fmt(v);if(l.got>=l.q)delete l.why}
+  if(e.target.matches('[data-why]'))l.why=e.target.value;renderRecv()});
+$('rPhoto').addEventListener('change',e=>{[...e.target.files].forEach(f=>photosR.push(URL.createObjectURL(f)));$('rPhotos').innerHTML=photosR.map(u=>`<img src="${u}" alt="廠商單據">`).join('')});
+function finishRecv(){curPO.recv=true;renderRecv();toast('到貨核對完成'+(can('sign')?'，可以簽核':'，等永順或土豆簽核'))}
+function signPO(){const sh=curPO.lines.filter(l=>l.got<l.q);
+  sheet('簽核進貨單',`<p style="margin:0">${curPO.no}・${curPO.lines.length} 項</p>${sh.length?`<div class="alert a-warn">短收 ${sh.length} 項：${sh.map(l=>{const i=IT.find(x=>x.id===l.id);return esc(i?fullName(i):l.name)+'（'+l.why+'）'}).join('、')}</div>`:'<div class="alert a-ok">全部照叫的量到貨</div>'}
+    <p class="hint">簽核後以實收量入庫、進價帶入成本。</p><div class="row2"><button class="btn plain" type="button" data-close>取消</button><button class="btn ok" type="button" id="sOk">確定簽核</button></div>`,
+    ()=>{$('sOk').onclick=()=>{curPO.st='signed';curPO.signBy=user();closeSheet();toast('已簽核（'+user()+'）');go('buy')}})}
+
+go('home');
+</script>
+</body>
+</html>
