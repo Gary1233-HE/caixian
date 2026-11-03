@@ -204,9 +204,11 @@ pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);borde
 
 <!-- 到貨核對 -->
 <main class="gut" id="v-recv" hidden><div class="in" style="display:flex;flex-direction:column;gap:10px">
-  <div class="alert a-warn">逐項核對實收量。實收比叫的少，要選短收原因。</div>
+  <div class="steps" id="rSteps"></div>
+  <div class="alert a-warn">卸貨時逐項核對<b>數量</b>和<b>金額</b>。實收比叫的少要選短收原因；單價先帶最近進價，跟廠商單據不同就改。</div>
   <div class="vtabs" id="rTabs"></div>
   <div class="card" style="padding:0;overflow:hidden" id="rItems"></div>
+  <div class="card" id="rVendor"></div>
   <div class="card"><b>廠商單據照片</b><div class="photo" style="margin-top:8px"><label class="btn soft sm" style="cursor:pointer">📷 拍單據<input type="file" accept="image/*" id="rPhoto" hidden multiple></label><span id="rPhotos" class="photo"></span></div></div>
 </div></main>
 
@@ -269,7 +271,7 @@ let loc='倉',cat='全部';
 const counts={倉:{},市:{}};          // 本次點貨輸入
 const submitted={倉:null,市:null};  // 已送出的點貨 {by,time,data}
 let photosC=[],photosR=[];
-let pos=[{no:'PD20261102-01',date:'11/2（一）',by:'永順',st:'signed',recv:true,lines:[{id:1,q:6,got:6},{id:8,q:3,got:3},{id:16,q:6,got:5,why:'廠商缺貨'}]}];
+let pos=[{no:'PD20261102-01',date:'11/2（一）',by:'永順',st:'signed',recv:true,slip:{西螺:5434},lines:[{id:1,q:6,got:6,price:520},{id:8,q:3,got:3,price:478},{id:16,q:6,got:5,price:96,why:'廠商缺貨'}]}];
 let curPO=null,vtab='西螺';
 
 /* ---------- 頂部列 ---------- */
@@ -357,19 +359,22 @@ function renderBuy(){$('bottom').hidden=true;
   const S={new:['新增','p-new'],buy:['進貨','p-buy'],signed:['已簽核','p-done']};
   $('poList').innerHTML=pos.map((p,k)=>{const vs=[...new Set(p.lines.map(l=>vOf(l)))];return `<button class="oc" type="button" data-po="${k}">
     <div class="h"><span>${p.no}</span><span>${p.date}・${p.by}</span></div>
-    <div class="t"><b>${vs.join('、')}</b><span class="pill ${S[p.st][1]}">${S[p.st][0]}</span>${p.st==='buy'?`<span class="pill ${p.recv?'p-done':'p-bad'}">${p.recv?'已到貨核對':'待到貨'}</span>`:''}</div>
+    <div class="t"><b>${vs.join('、')}</b><span class="pill ${['p-new','p-buy','p-buy','p-done'][stepIdx(p)]}">${['新增','已下單・待到貨','已核對・待簽核','已簽核'][stepIdx(p)]}</span></div>
     <div class="hint">${p.lines.length} 項${p.lines.some(l=>l.got!==undefined&&l.got<l.q)?'・有短收':''}</div></button>`}).join('')}
 const vOf=l=>l.v||IT.find(i=>i.id===l.id)?.v||'其他';
 $('newPO').addEventListener('click',()=>{const n=pos.filter(p=>p.date===TODAY).length+1;
-  curPO={no:`PD${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(n)}`,date:TODAY,by:user(),st:'new',lines:[]};
+  curPO={no:`PD${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(n)}`,date:TODAY,by:user(),st:'new',lines:[],slip:{}};
   IT.filter(i=>i.v).forEach(i=>{const s=sugOf(i);if(s)curPO.lines.push({id:i.id,q:s,sug:s})});
   pos.unshift(curPO);vtab=VENDORS.find(v=>curPO.lines.some(l=>vOf(l)===v))||'西螺';go('po');
   toast(curPO.lines.length?`已帶入 ${curPO.lines.length} 項建議量，可再調整`:'今天還沒點貨，請自行填數量')});
 $('poList').addEventListener('click',e=>{const b=e.target.closest('[data-po]');if(!b)return;curPO=pos[+b.dataset.po];vtab=vOf(curPO.lines[0]||{});
   go(curPO.st==='buy'?'recv':'po')});
 function poLine(id){return curPO.lines.find(l=>l.id===id)}
+const STEP=[['新增','開始下單'],['送出進貨單','確定數量、向廠商下單'],['到貨核對','卸貨核對數量、金額'],['簽核','確認正確，正式入庫與成本']];
+function stepIdx(p){return p.st==='new'?0:p.st==='buy'?(p.recv?2:1):3}
+function stepsHTML(p){const k=stepIdx(p);return STEP.map((x,i)=>`<span class="${i===k?'on':''}" title="${x[1]}">${i?'→ ':''}${i<k?'✓':''}${x[0]}</span>`).join(' ')+`<span style="width:100%">目前：${STEP[k][0]}（${STEP[k][1]}）</span>`}
 function renderPO(){const ro=curPO.st!=='new';
-  $('poSteps').innerHTML=['新增','進貨','簽核'].map((s,k)=>`<span class="${['new','buy','signed'][k]===curPO.st?'on':''}">${k?'→ ':''}${s}</span>`).join(' ')+(ro?'<span>（唯讀）</span>':'');
+  $('poSteps').innerHTML=stepsHTML(curPO)+(ro?'<span>（唯讀）</span>':'');
   $('vTabs').innerHTML=VENDORS.map(v=>{const n=curPO.lines.filter(l=>vOf(l)===v&&l.q>0).length;return `<button class="vt" type="button" data-v="${v}" aria-pressed="${v===vtab}">${v}<small>${n?n+' 項':'—'}</small></button>`}).join('');
   const L=IT.filter(i=>i.v===vtab&&(!ro||poLine(i.id)));const extra=curPO.lines.filter(l=>!IT.some(i=>i.id===l.id)&&vOf(l)===vtab);
   $('vHint').textContent=`${vtab}：${L.length} 個品項`;$('useSug').hidden=ro;$('addItem').hidden=ro;
@@ -408,8 +413,8 @@ function showLineText(){const vs=[...new Set(curPO.lines.filter(l=>l.q>0).map(vO
   sheet('給廠商的 LINE 文字',vs.map((v,k)=>`<div><b>${v}</b><pre id="lt${k}">${esc(lineText(v))}</pre><button class="btn soft sm" type="button" data-copy="${k}" style="margin-top:6px">複製 ${v}</button></div>`).join('')+'<button class="btn plain" type="button" data-close>關閉</button>',
   ()=>{$('shB').onclick=async e=>{const b=e.target.closest('[data-copy]');if(!b)return;const t=$('lt'+b.dataset.copy).textContent;
     try{await navigator.clipboard.writeText(t);b.textContent='已複製 ✓'}catch(err){const r=document.createRange();r.selectNodeContents($('lt'+b.dataset.copy));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='已選取，請長按複製'}}})}
-function sendPO(){const zero=curPO.lines.filter(l=>!(l.q>0));curPO.lines=curPO.lines.filter(l=>l.q>0);curPO.st='buy';curPO.recv=false;
-  renderPO();showLineText();toast('進貨單已送出，狀態：進貨')}
+function sendPO(){curPO.lines=curPO.lines.filter(l=>l.q>0);curPO.lines.forEach(l=>{const i=IT.find(x=>x.id===l.id);if(i&&i.price!==undefined&&l.price===undefined)l.price=i.price});curPO.st='buy';curPO.recv=false;curPO.slip=curPO.slip||{};
+  renderPO();showLineText();toast('已送出進貨單，到貨後請核對數量和金額')}
 
 /* ---------- 到貨核對 ---------- */
 let rtab='';
@@ -419,21 +424,36 @@ function renderRecv(){const vs=[...new Set(curPO.lines.map(vOf))];if(!vs.include
   $('rItems').innerHTML=L.map((l,k)=>{const i=IT.find(x=>x.id===l.id);const nm=i?fullName(i):l.name,u=i?i.u:l.u;const got=l.got;const short=got!==undefined&&got<l.q;
     return `<div class="bi${got!==undefined?' on':''}" data-k="${curPO.lines.indexOf(l)}"><div class="nm">${esc(nm)}<br><span class="hint">叫 ${l.q} ${esc(u)}${l.sub?'・可換 '+esc(l.sub):''}</span></div>
       <div class="qty"><input inputmode="${u==='公斤'?'decimal':'numeric'}" data-g value="${got??''}" placeholder="${l.q}" ${ro?'disabled':''} aria-label="${esc(nm)}實收"><span class="u">${esc(u)}</span></div>
-      ${ro?'':`<div class="sub"><button class="linkb" type="button" data-same>實收＝${l.q}</button></div>`}
+      <div class="sub" style="grid-column:1/-1;justify-content:space-between">${ro?'<span></span>':`<button class="linkb" type="button" data-same>實收＝${l.q}</button>`}
+        <span style="display:flex;align-items:center;gap:6px">單價 <input inputmode="decimal" data-p value="${l.price??''}" placeholder="—" style="width:84px;text-align:right;padding:4px 6px" ${ro?'disabled':''} aria-label="${esc(nm)}單價">／${esc(u)}</span></div>
+      ${l.got!==undefined&&l.price!==undefined?`<div class="sub" style="grid-column:1/-1;justify-content:flex-end;color:var(--muted)">小計 <b style="color:var(--fg);font-size:15px">${money(l.got*l.price)}</b></div>`:''}
       ${short?`<div class="sub" style="grid-column:1/-1"><span style="color:var(--bad);font-weight:700">短收 ${fmt(l.q-got)} ${esc(u)}</span><select data-why style="width:auto" ${ro?'disabled':''}><option value="">選原因</option>${SHORT.map(s=>`<option${l.why===s?' selected':''}>${s}</option>`).join('')}</select></div>`:''}</div>`}).join('');
-  const all=curPO.lines.every(l=>l.got!==undefined);const needWhy=curPO.lines.filter(l=>l.got<l.q&&!l.why).length;
-  $('bottom').hidden=false;$('bSum').innerHTML=`已核對 <b>${curPO.lines.filter(l=>l.got!==undefined).length}</b> / ${curPO.lines.length}${needWhy?`<br><span style="color:var(--bad)">${needWhy} 項短收沒選原因</span>`:''}`;
+  const VL=curPO.lines.filter(l=>vOf(l)===rtab);const vsum=VL.reduce((a,l)=>a+(l.got!==undefined&&l.price!==undefined?l.got*l.price:0),0);const slip=curPO.slip[rtab];
+  $('rSteps').innerHTML=stepsHTML(curPO);
+  $('rVendor').innerHTML=`<b>${rtab} 金額核對</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;align-items:end">
+    <div><div class="hint">系統計算（實收×單價）</div><b style="font-size:20px">${money(vsum)}</b></div>
+    <label class="hint">廠商單據金額<input inputmode="numeric" id="slipAmt" value="${slip??''}" placeholder="照單據填" ${ro?'disabled':''}></label></div>
+    ${slip!==undefined&&Math.round(slip)!==Math.round(vsum)?`<div class="alert a-bad" style="margin-top:8px">差 ${money(Math.abs(slip-vsum))}，請檢查數量或單價</div>`:slip!==undefined?'<div class="alert a-ok" style="margin-top:8px">金額相符</div>':''}`;
+  const all=curPO.lines.every(l=>l.got!==undefined&&l.price!==undefined);const needWhy=curPO.lines.filter(l=>l.got<l.q&&!l.why).length;
+  const noP=curPO.lines.filter(l=>l.got!==undefined&&l.price===undefined).length;
+  $('bottom').hidden=false;$('bSum').innerHTML=`已核對 <b>${curPO.lines.filter(l=>l.got!==undefined&&l.price!==undefined).length}</b> / ${curPO.lines.length}${needWhy?`<br><span style="color:var(--bad)">${needWhy} 項短收沒選原因</span>`:''}${noP?`<br><span style="color:var(--bad)">${noP} 項沒填單價</span>`:''}`;
   $('bBtns').innerHTML=ro?'<span class="pill p-done">已簽核</span>':curPO.recv?(can('sign')?`<button class="btn ok" type="button" id="poSign">簽核</button>`:'<span class="hint">等永順或土豆簽核</span>'):`<button class="btn pri" type="button" id="rDone" ${all&&!needWhy?'':'disabled'}>完成核對</button>`}
 $('rTabs').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;rtab=b.dataset.v;renderRecv()});
 $('rItems').addEventListener('click',e=>{const row=e.target.closest('.bi');if(!row||!e.target.closest('[data-same]'))return;const l=curPO.lines[+row.dataset.k];l.got=l.q;delete l.why;renderRecv()});
 $('rItems').addEventListener('change',e=>{const row=e.target.closest('.bi');if(!row)return;const l=curPO.lines[+row.dataset.k];
   if(e.target.matches('[data-g]')){const v=parseFloat(e.target.value);l.got=isNaN(v)||v<0?undefined:fmt(v);if(l.got>=l.q)delete l.why}
-  if(e.target.matches('[data-why]'))l.why=e.target.value;renderRecv()});
+  if(e.target.matches('[data-why]'))l.why=e.target.value;
+  if(e.target.matches('[data-p]')){const v=parseFloat(e.target.value);l.price=isNaN(v)||v<0?undefined:v}
+  renderRecv()});
+$('rVendor').addEventListener('change',e=>{if(e.target.id!=='slipAmt')return;const v=parseFloat(e.target.value);if(isNaN(v))delete curPO.slip[rtab];else curPO.slip[rtab]=v;renderRecv()});
 $('rPhoto').addEventListener('change',e=>{[...e.target.files].forEach(f=>photosR.push(URL.createObjectURL(f)));$('rPhotos').innerHTML=photosR.map(u=>`<img src="${u}" alt="廠商單據">`).join('')});
-function finishRecv(){curPO.recv=true;renderRecv();toast('到貨核對完成'+(can('sign')?'，可以簽核':'，等永順或土豆簽核'))}
+function finishRecv(){const mis=Object.entries(curPO.slip).filter(([v,a])=>Math.round(a)!==Math.round(curPO.lines.filter(l=>vOf(l)===v).reduce((x,l)=>x+l.got*l.price,0)));
+  if(mis.length&&!finishRecv.ok){sheet('金額不符',`<div class="alert a-bad">${mis.map(m=>m[0]).join('、')} 的廠商單據金額跟系統計算不同。</div><div class="row2"><button class="btn plain" type="button" data-close>回去檢查</button><button class="btn pri" type="button" id="fOk">仍完成核對</button></div>`,()=>{$('fOk').onclick=()=>{finishRecv.ok=1;closeSheet();finishRecv();finishRecv.ok=0}});return}
+  curPO.recv=true;renderRecv();toast('到貨核對完成'+(can('sign')?'，可以簽核':'，等永順或土豆簽核'))}
 function signPO(){const sh=curPO.lines.filter(l=>l.got<l.q);
   sheet('簽核進貨單',`<p style="margin:0">${curPO.no}・${curPO.lines.length} 項</p>${sh.length?`<div class="alert a-warn">短收 ${sh.length} 項：${sh.map(l=>{const i=IT.find(x=>x.id===l.id);return esc(i?fullName(i):l.name)+'（'+l.why+'）'}).join('、')}</div>`:'<div class="alert a-ok">全部照叫的量到貨</div>'}
-    <p class="hint">簽核後以實收量入庫、進價帶入成本。</p><div class="row2"><button class="btn plain" type="button" data-close>取消</button><button class="btn ok" type="button" id="sOk">確定簽核</button></div>`,
+    <div class="alert a-info">進貨總金額 <b>${money(curPO.lines.reduce((a,l)=>a+l.got*(l.price||0),0))}</b>${Object.keys(curPO.slip).length?'・廠商單據 '+money(Object.values(curPO.slip).reduce((a,b)=>a+b,0)):''}</div>
+    <p class="hint">確認正確後簽核：實收量正式進倉庫庫存，單價寫進成本價格。簽核後不能直接修改，要先簽退。</p><div class="row2"><button class="btn plain" type="button" data-close>取消</button><button class="btn ok" type="button" id="sOk">確定簽核</button></div>`,
     ()=>{$('sOk').onclick=()=>{curPO.st='signed';curPO.signBy=user();closeSheet();toast('已簽核（'+user()+'）');go('buy')}})}
 
 go('home');
