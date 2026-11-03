@@ -18,9 +18,25 @@
   --accent:#4e7a34; --accent-soft:#e7eedd; --on-accent:#ffffff; --gold-btn:#e3b030; --on-gold:#1f2a12;
   --fav-off:#ffffff; --orange:#b07d12; --orange-soft:#faf1d9; --on-orange:#1f2a12; --heart:#d24b45; --price:#c62d26;
   --bad:#c23b32; --bad-soft:#fbe6e4; --info:#2c5e89; --info-soft:#e3edf7; --unread:#fbf5e6; color-scheme:light;
+  --bar:var(--head); --bar-btn:var(--gold-btn); --on-bar-btn:var(--on-gold); --bar-amt:var(--gold-btn);
   --f-display:"Huninn","Noto Sans TC",system-ui,sans-serif;
   --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
 }
+
+/* 配色 B：鮮綠＋白 */
+:root[data-pal="b"]{
+  --bg:#f3f6f3; --card:#ffffff; --fg:#1d2b21; --muted:#66756a; --line:#e1e8e2;
+  --head:#2e9e4f; --head-fg:#ffffff; --head-btn:#45b064; --head-btn-fg:#ffffff; --name:#1b5a31;
+  --accent:#1f6e3a; --accent-soft:#e3f2e7; --on-accent:#ffffff; --gold-btn:#1f6e3a; --on-gold:#ffffff;
+  --fav-off:#ffffff; --orange:#c0620f; --orange-soft:#fdf0e1; --heart:#d24b45; --price:#d0342c; --unread:#eef8f1;
+  --bar:#1f6e3a; --bar-btn:#ffffff; --on-bar-btn:#1f6e3a; --bar-amt:#ffe08a}
+/* 配色 C：大地色 */
+:root[data-pal="c"]{
+  --bg:#f4ead6; --card:#fffaf0; --fg:#3b2a1c; --muted:#7b6a57; --line:#e5d5b8;
+  --head:#6b4a2f; --head-fg:#ffffff; --head-btn:#80593a; --head-btn-fg:#ffffff; --name:#5a3a20;
+  --accent:#9c4a22; --accent-soft:#f6e3d3; --on-accent:#ffffff; --gold-btn:#d2541f; --on-gold:#ffffff;
+  --fav-off:#fffaf0; --orange:#b0601a; --orange-soft:#fbecd8; --heart:#c43d33; --price:#b8261f; --unread:#fbf0dc;
+  --bar:#6b4a2f; --bar-btn:#d2541f; --on-bar-btn:#ffffff; --bar-amt:#ffd27a}
 *{box-sizing:border-box}
 html,body{background:var(--bg)}
 body{color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
@@ -118,11 +134,11 @@ main{padding-block:12px 170px;display:flex;flex-direction:column;gap:10px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 
 .cartbar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:15;padding-block:8px;pointer-events:none}
-.cartbar .in{display:flex;align-items:center;gap:10px;background:var(--head);color:var(--head-fg);border-radius:12px;padding:8px 8px 8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.2);pointer-events:auto}
+.cartbar .in{display:flex;align-items:center;gap:10px;background:var(--bar);color:#fff;border-radius:12px;padding:8px 8px 8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.2);pointer-events:auto}
 .cartbar .sum{flex:1;font-size:14px;font-variant-numeric:tabular-nums}
 .cartbar .sum b{font-size:18px}
-.cartbar .sum b#cbAmt{color:var(--gold-btn)}
-.cartbar .btn{background:var(--gold-btn);color:var(--on-gold);font-size:17px;padding:11px 22px}
+.cartbar .sum b#cbAmt{color:var(--bar-amt)}
+.cartbar .btn{background:var(--bar-btn);color:var(--on-bar-btn);font-size:17px;padding:11px 22px}
 
 nav.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
 nav.tabbar .in{display:grid;grid-template-columns:repeat(4,1fr)}
@@ -223,6 +239,7 @@ nav.tabbar button[aria-current="page"]{color:var(--accent)}
 <div class="demo gut"><div class="in">
   <b>樣品資料</b>
   <label>模擬時間 <select id="simTime"><option value="now">現在</option><option value="00:30">00:30 截單前</option><option value="02:00">02:00 灰色時段</option><option value="05:00">05:00 已換日</option></select></label>
+  <label>配色 <select id="pal"><option value="b">B 鮮綠＋白</option><option value="c">C 大地色</option><option value="">原本（墨綠）</option></select></label>
   <label>異常倍數 <select id="mult"><option>1.5</option><option selected>2</option><option>3</option></select> 倍（後台設定）</label>
   <label><input type="checkbox" id="showPay" checked> 出貨明細顯示收款狀態（後台設定）</label>
 </div></div>
@@ -687,7 +704,9 @@ function go(v){if(!(v in TITLES))v='shop';view=v;Object.keys(TITLES).forEach(k=>
   header();if(v==='orders')renderOrders();if(v==='notes')renderNotes();if(v==='slips')renderSlips();if(v==='price')renderPrice();if(v==='stats')renderStats();renderCartBar();window.scrollTo(0,0)}
 document.querySelector('nav.tabbar').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)});
 
-apps[2].d=addD(TODAY(),-1);renderCats();setDate(earliest());updBadge();updMBadge();go((location.hash||'').slice(1));
+apps[2].d=addD(TODAY(),-1);(()=>{const q=new URLSearchParams(location.search).get('pal');const v=q!==null?q:'b';document.documentElement.dataset.pal=v;$('pal').value=v;
+  $('pal').onchange=()=>{document.documentElement.dataset.pal=$('pal').value}})();
+renderCats();setDate(earliest());updBadge();updMBadge();go((location.hash||'').slice(1));
 </script>
 </body>
 </html>
