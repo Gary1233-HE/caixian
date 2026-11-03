@@ -147,7 +147,7 @@ pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);borde
 
 <div class="demo gut"><div class="in">
   <b>樣品資料</b>
-  <label>登入身分 <select id="user"><option value="順">順（點貨）</option><option value="巃騰">巃騰（點貨）</option><option value="小沾">小沾（點貨）</option><option value="永順" selected>永順（點貨＋進貨＋簽核）</option><option value="土豆">土豆（全部＋看成本）</option></select></label>
+  <label>登入身分 <select id="user"><option value="順">順（點貨）</option><option value="巃騰">巃騰（點貨）</option><option value="小沾">小沾（點貨）</option><option value="永順" selected>永順（全部＋看成本，與土豆同權限）</option><option value="土豆">土豆（全部＋看成本）</option></select></label>
   <button type="button" id="fill">一鍵帶入點貨數字</button>
 </div></div>
 
@@ -246,7 +246,7 @@ const IT=[
  {id:21,n:'冷凍秋葵',sp:'包',cat:'冷凍',u:'包',v:'丸郎',safe:20,book:{倉:12},freq:[2,5],price:48,locs:['倉']},
  {id:22,n:'冷凍玉米粒',sp:'包',cat:'冷凍',u:'包',v:'丸郎',safe:15,book:{倉:10},freq:[2,5],price:42,locs:['倉']}
 ];
-const USERS={順:{count:1},巃騰:{count:1},小沾:{count:1},永順:{count:1,buy:1,sign:1},土豆:{count:1,buy:1,sign:1,cost:1}};
+const USERS={順:{count:1},巃騰:{count:1},小沾:{count:1},永順:{count:1,buy:1,sign:1,cost:1},土豆:{count:1,buy:1,sign:1,cost:1}};
 const SHORT=['廠商缺貨','品質不良退回','數量算錯','改用替代品項','其他'];
 const WD='日一二三四五六';
 
